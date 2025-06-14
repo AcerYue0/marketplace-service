@@ -1,31 +1,26 @@
 package com.example.service;
 
-import com.example.enums.Util.MarketplaceItem;
+import com.example.enums.Setting;
+import com.example.util.MarketplaceItem;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
 public class MarketplaceService {
 
-    private static final String API_URL = "https://msu.io/marketplace/api/marketplace/explore/items";
-    private static final File CLASSIFICATION_FILE = Paths.get("keyword_classification.json").toFile();
-    private static final File OUTPUT_FILE = Paths.get("marketplace_result.json").toFile();
-
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
     public void fetchAndSaveLowestPrices() throws IOException {
-        Map<String, List<String>> keywordMap = mapper.readValue(CLASSIFICATION_FILE,
+        Map<String, List<String>> keywordMap = mapper.readValue(Setting.CLASSIFICATION_FILE,
                 new TypeReference<Map<String, List<String>>>() {});
 
         Map<String, MarketplaceItem> results = new LinkedHashMap<>();
@@ -43,11 +38,14 @@ public class MarketplaceService {
                 Map<String, Object> body = createRequestBody(keyword, pageNo);
                 HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(body), createHeaders());
 
-                ResponseEntity<Map> response = restTemplate.exchange(API_URL, HttpMethod.POST, request, Map.class);
+                ResponseEntity<Map> response = restTemplate.exchange(Setting.API_URL, HttpMethod.POST, request, Map.class);
+
+                // response解析
                 Map<String, Object> responseMap = (Map<String, Object>) response.getBody();
                 if (responseMap == null) break;
-
                 List<Map<String, Object>> items = (List<Map<String, Object>>) responseMap.get("items");
+                Map<String, Object> pagination = (Map<String, Object>) responseMap.get("paginationResult");
+
                 if (items != null) {
                     for (Map<String, Object> item : items) {
                         String name = (String) item.get("name");
@@ -67,7 +65,6 @@ public class MarketplaceService {
                 // 若所有 values 都已被找到，跳出迴圈
                 if (foundValues.containsAll(values)) break;
 
-                Map<String, Object> pagination = (Map<String, Object>) responseMap.get("paginationResult");
                 hasMorePage = pagination != null && !(Boolean) pagination.get("isLastPage");
                 pageNo++;
             }
@@ -77,7 +74,7 @@ public class MarketplaceService {
             }
         }
 
-        mapper.writerWithDefaultPrettyPrinter().writeValue(OUTPUT_FILE, results);
+        mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, results);
     }
 
     private Map<String, Object> createRequestBody(String keyword, int pageNo) {
@@ -85,15 +82,15 @@ public class MarketplaceService {
         Map<String, Object> filter = new HashMap<>();
         filter.put("name", keyword);
         filter.put("categoryNo", 0);
-        filter.put("price", Map.of("min", 0, "max", 500000));
-        filter.put("level", Map.of("min", 0, "max", 250));
-        filter.put("starforce", Map.of("min", 0, "max", 25));
-        filter.put("potential", Map.of("min", 0, "max", 4));
-        filter.put("bonusPotential", Map.of("min", 0, "max", 4));
+        filter.put("price", Map.of("min", Setting.ZERO, "max", 500000));
+        filter.put("level", Map.of("min", Setting.ZERO, "max", 250));
+        filter.put("starforce", Map.of("min", Setting.ZERO, "max", 25));
+        filter.put("potential", Map.of("min", Setting.ZERO, "max", 4));
+        filter.put("bonusPotential", Map.of("min", Setting.ZERO, "max", 4));
 
         body.put("filter", filter);
         body.put("sorting", "ExploreSorting_LOWEST_PRICE");
-        body.put("paginationParam", Map.of("pageNo", pageNo, "pageSize", 1000));
+        body.put("paginationParam", Map.of("pageNo", pageNo, "pageSize", Setting.PAGE_SIZE));
         return body;
     }
 
