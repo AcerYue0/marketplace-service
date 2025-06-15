@@ -27,8 +27,17 @@ public class MarketplaceService {
         if (input == null) {
             Setting.GLOBAL_LOGGER.info("Resource not found: " + Setting.CLASSIFICATION_FILE);
         }
-        Map<String, List<String>> keywordMap = mapper.readValue(input, new TypeReference<>() {
-        });
+        Map<String, List<String>> keywordMap = mapper.readValue(input, new TypeReference<>() {});
+        // 取出 "others" 的值並轉換為 List<String>
+        List<String> others = keywordMap.remove("others"); // 先移除原本的 "others" 鍵，避免干擾
+
+        if (others != null) {
+            for (String item : others) {
+                // 為每個 item 加入一筆新的 key-value
+                keywordMap.put(item, Collections.singletonList(item));
+            }
+        }
+
         Map<String, BigDecimal> results = new HashMap<>();
         // 若已有 output.json，先載入舊資料
         if (Setting.OUTPUT_FILE.exists()) {

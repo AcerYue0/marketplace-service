@@ -1,16 +1,19 @@
 package com.example.controller;
 
 import com.example.service.FetchAllNFTCollectionItemsTask;
+import com.example.service.TimerService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/task")
 public class TaskController {
 
-    private final FetchAllNFTCollectionItemsTask taskService;
+    private final TimerService timerService;
+    private final FetchAllNFTCollectionItemsTask task;
 
-    public TaskController(FetchAllNFTCollectionItemsTask taskService) {
-        this.taskService = taskService;
+    public TaskController(TimerService timerService, FetchAllNFTCollectionItemsTask task) {
+        this.timerService = timerService;
+        this.task = task;
     }
 
     /**
@@ -18,13 +21,13 @@ public class TaskController {
      */
     @PostMapping("/trigger")
     public String manualTrigger() {
-        if (!taskService.isCronEnabled()) {
-            return "Too many request. Please wait after last execution finished.";
+        if (!task.isCronEnabled()) {
+            return "Too many requests. Please wait after last execution finished.";
         }
-        taskService.disableCron();
-        // TODO taskService.startCronCooldownTimer();
-        taskService.executeFetchTask();
-        return "Manual task executed. Cron disabled.";
+        task.disableCron();
+        timerService.start15MinTimer(task); // 非同步排程恢復 cron
+        task.executeFetchTask();     // 手動執行任務
+        return "Manual task executed. Cron disabled for 15 minutes.";
     }
 
     /**
@@ -32,7 +35,7 @@ public class TaskController {
      */
     @PostMapping("/cronEnable")
     public String enableCron() {
-        taskService.enableCron();
+        task.enableCron();
         return "Cron enabled.";
     }
 
@@ -41,7 +44,7 @@ public class TaskController {
      */
     @PostMapping("/cronDisable")
     public String disableCron() {
-        taskService.disableCron();
+        task.disableCron();
         return "Cron disabled.";
     }
 
@@ -50,6 +53,6 @@ public class TaskController {
      */
     @GetMapping("/cronStatus")
     public String cronStatus() {
-        return taskService.isCronEnabled() ? "Cron is ENABLED." : "Cron is DISABLED.";
+        return task.isCronEnabled() ? "Cron is ENABLED." : "Cron is DISABLED.";
     }
 }

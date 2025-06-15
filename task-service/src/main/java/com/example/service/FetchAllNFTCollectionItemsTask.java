@@ -13,15 +13,20 @@ public class FetchAllNFTCollectionItemsTask {
 
     // 可透過前端或手動API切換flag(暫用靜態變數)
     private static volatile boolean cronEnabled = true;
+    private static volatile boolean isSkiped = false;
 
     @Scheduled(cron = "0 */15 * * * *")
     public void runScheduledTask() {
         Setting.GLOBAL_LOGGER.info("[runScheduledTask]");
         if (!cronEnabled) {
+            isSkiped = true;
+            Setting.GLOBAL_LOGGER.info("[runScheduledTask] Cron disabled.");
             return;
         }
         executeFetchTask();
-        // TODO enable cron in next cycle
+        if (isSkiped) {
+            enableCron();
+        }
     }
 
     public void executeFetchTask() {
