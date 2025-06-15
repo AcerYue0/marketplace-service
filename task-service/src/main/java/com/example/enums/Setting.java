@@ -12,8 +12,8 @@ public class Setting {
 
     public static final String API_URL = "https://msu.io/marketplace/api/marketplace/explore/items";
 
-    public static final String CLASSIFICATION_FILE = "keyword_classification.json";
-    public static final File OUTPUT_FILE = Paths.get(System.getProperty("user.dir"), "var", "data", "marketplace_result.json").toFile();
+    public static final File CLASSIFICATION_FILE = Paths.get("keyword_classification.json").toFile();
+    public static final File OUTPUT_FILE = Paths.get("marketplace_result.json").toFile();
 
     public static final Logger GLOBAL_LOGGER = LoggerFactory.getLogger(Setting.class);
 }

@@ -4,6 +4,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.enums.Setting;
+
 @Service
 public class FetchAllNFTCollectionItemsTask {
 
@@ -14,18 +16,20 @@ public class FetchAllNFTCollectionItemsTask {
 
     @Scheduled(cron = "0 */15 * * * *")
     public void runScheduledTask() {
-        //TODO Log
+        Setting.GLOBAL_LOGGER.info("[runScheduledTask]");
         if (!cronEnabled) {
             return;
         }
         executeFetchTask();
+        // TODO enable cron in next cycle
     }
 
-    private void executeFetchTask() {
+    public void executeFetchTask() {
+        Setting.GLOBAL_LOGGER.info("[executeFetchTask]");
         try {
-            restTemplate.postForEntity("http://localhost:8081/api/marketplace/fetchList", null, String.class);
+            restTemplate.postForEntity("http://localhost:8082/api/marketplace/fetchList", null, String.class);
         } catch (Exception e) {
-            // TODO Log
+            Setting.GLOBAL_LOGGER.info(String.valueOf(e));
         }
     }
 

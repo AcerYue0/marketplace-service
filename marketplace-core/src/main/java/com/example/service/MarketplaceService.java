@@ -1,7 +1,7 @@
 package com.example.service;
 
 import com.example.enums.Setting;
-import com.example.util.MarketplaceItem;
+import com.example.util.MarketplaceItemDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -19,32 +20,69 @@ public class MarketplaceService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public void fetchAndSaveLowestPrices() throws IOException {
-        Map<String, List<String>> keywordMap = mapper.readValue(Setting.CLASSIFICATION_FILE,
-                new TypeReference<Map<String, List<String>>>() {});
+    public void fetchAndSaveLowestPrices() throws IOException, InterruptedException {
+        Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices]");
 
-        Map<String, MarketplaceItem> results = new LinkedHashMap<>();
+        InputStream input = getClass().getClassLoader().getResourceAsStream(Setting.CLASSIFICATION_FILE);
+        if (input == null) {
+            Setting.GLOBAL_LOGGER.info("Resource not found: " + Setting.CLASSIFICATION_FILE);
+        }
+        Map<String, List<String>> keywordMap = mapper.readValue(input, new TypeReference<>() {
+        });
+        Map<String, BigDecimal> results = new HashMap<>();
+        // 若已有 output.json，先載入舊資料
+        if (Setting.OUTPUT_FILE.exists()) {
+            try {
+                List<Map<String, Object>> oldList = mapper.readValue(Setting.OUTPUT_FILE,
+                        new TypeReference<List<Map<String, Object>>>() {});
+                for (Map<String, Object> entry : oldList) {
+                    String name = (String) entry.get("name");
+                    BigDecimal price = (BigDecimal) entry.get("price");
+                    results.put(name, price);
+                }
+            } catch (IOException e) {
+                Setting.GLOBAL_LOGGER.info("Failed to read existing output.json, starting fresh.");
+            }
+        }
 
+        // 根據關鍵字列表模糊搜尋
         for (Map.Entry<String, List<String>> entry : keywordMap.entrySet()) {
-            String keyword = entry.getKey();
-            List<String> values = entry.getValue();
+            String keyword = entry.getKey(); // 每個keyword進行搜尋
+            List<String> values = entry.getValue(); // keyword中對應的物件
 
-            MarketplaceItem lowestItem = null;
+            // 初始化迴圈值
             int pageNo = 1;
             boolean hasMorePage = true;
             Set<String> foundValues = new HashSet<>();
 
             while (hasMorePage) {
                 Map<String, Object> body = createRequestBody(keyword, pageNo);
-                HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(body), createHeaders());
+                HttpHeaders header = createHeaders();
+                HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(body), header);
 
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}, {}", header, body);
                 ResponseEntity<Map> response = restTemplate.exchange(Setting.API_URL, HttpMethod.POST, request, Map.class);
+
+                // TODO 429 status code handler
+
+                // 每次請求後停止 4 秒
+                Thread.sleep(4000);
 
                 // response解析
                 Map<String, Object> responseMap = (Map<String, Object>) response.getBody();
-                if (responseMap == null) break;
+                if (responseMap == null) {
+                    Setting.GLOBAL_LOGGER.error("[fetchAndSaveLowestPrices] fetch complete but response not properly: {}", response);
+                    break;
+                }
                 List<Map<String, Object>> items = (List<Map<String, Object>>) responseMap.get("items");
                 Map<String, Object> pagination = (Map<String, Object>) responseMap.get("paginationResult");
+                // 判斷總物品數量
+                if ((int) pagination.get("totalCount") == 0) {
+                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] fetch complete but no item found: {}", response);
+                    break;
+                }
+
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] fetch complete and item found, row response: {}", response);
 
                 if (items != null) {
                     for (Map<String, Object> item : items) {
@@ -53,10 +91,21 @@ public class MarketplaceService {
                             Map<String, Object> salesInfo = (Map<String, Object>) item.get("salesInfo");
                             String priceWei = (String) salesInfo.get("priceWei");
                             if (priceWei == null || priceWei.isEmpty()) continue;
-                            BigDecimal price = new BigDecimal(priceWei).divide(BigDecimal.TEN.pow(18), 8, RoundingMode.DOWN);
-                            if (lowestItem == null || price.compareTo(lowestItem.getPrice()) < 0) {
-                                lowestItem = new MarketplaceItem(name, price, (String) item.get("imageUrl"));
+                            BigDecimal price = new BigDecimal(priceWei).divide(BigDecimal.TEN.pow(18), 0, RoundingMode.DOWN);
+                            // 若更低價則更新價格，寫入檔案
+                            BigDecimal nowValue;
+                            if (results.get(name) != null) {
+                                nowValue = results.get(name);
+                                if (price.compareTo(nowValue) < 0) {
+                                    results.put(name, price);
+                                    mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, results);
+                                }
+                            } else {
+                                results.put(name, price);
+                                mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, results);
                             }
+
+                            // 加入完成搜索列表
                             foundValues.addAll(values.stream().filter(name::contains).toList());
                         }
                     }
@@ -65,19 +114,15 @@ public class MarketplaceService {
                 // 若所有 values 都已被找到，跳出迴圈
                 if (foundValues.containsAll(values)) break;
 
-                hasMorePage = pagination != null && !(Boolean) pagination.get("isLastPage");
+                // 檢查是否為最後一頁，若有下一頁繼續迴圈
+                hasMorePage = !(Boolean) pagination.get("isLastPage");
                 pageNo++;
             }
-
-            if (lowestItem != null) {
-                results.put(keyword, lowestItem);
-            }
         }
-
-        mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, results);
     }
 
     private Map<String, Object> createRequestBody(String keyword, int pageNo) {
+        Setting.GLOBAL_LOGGER.trace("[createRequestBody]");
         Map<String, Object> body = new HashMap<>();
         Map<String, Object> filter = new HashMap<>();
         filter.put("name", keyword);
@@ -95,11 +140,21 @@ public class MarketplaceService {
     }
 
     private HttpHeaders createHeaders() {
+        Setting.GLOBAL_LOGGER.trace("[createHeaders]");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Accept", "*/*");
+        headers.add("User-Agent", "PostmanRuntime/7.44.0");
+        headers.add("Connection", "keep-alive");
         headers.add("Cookie", "utwat");
         headers.add("Cookie", "urwrt");
         return headers;
+    }
+
+    public Map<String, Object> loadLatestResult() throws IOException {
+        Setting.GLOBAL_LOGGER.trace("[loadLatestResult]");
+        return mapper.readValue(Setting.OUTPUT_FILE, new TypeReference<Map<String, Object>>() {
+        });
     }
 }
 
