@@ -153,10 +153,11 @@ public class MarketplaceService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Accept", "*/*");
-        headers.add("User-Agent", "PostmanRuntime/7.44.0");
+        headers.add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36");
         headers.add("Connection", "keep-alive");
         headers.add("Cookie", "utwat");
         headers.add("Cookie", "urwrt");
+        headers.add("Host", "msu.io");
         return headers;
     }
 
