@@ -30,6 +30,8 @@ public class TaskController {
         return "Manual task executed. Cron disabled for 15 minutes.";
     }
 
+    // TODO add getlist to call /api/marketplace/getList
+
     /**
      * 啟用 cron 排程
      */
