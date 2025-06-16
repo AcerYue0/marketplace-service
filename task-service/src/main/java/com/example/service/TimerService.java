@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.task.FetchAllNFTCollectionItemsTask;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;

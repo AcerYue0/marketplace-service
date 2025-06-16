@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.task;
 
 public class GetNFTCollectionItemsValueTask {
     // TODO implementation

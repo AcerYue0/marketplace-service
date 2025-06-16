@@ -163,7 +163,7 @@ public class MarketplaceService {
     private ResponseEntity<Map> safeExchangeWithRetry(HttpEntity<String> request) {
         int retryCount = 0;
         int backoffSeconds = 5;
-
+        // TODO playwright implementation
         while (retryCount < Setting.MAX_RETRY) {
             try {
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] attempt {} to fetch item", retryCount + 1);
@@ -171,7 +171,7 @@ public class MarketplaceService {
                 return response;
             } catch (HttpClientErrorException e) {
                 int statusCode = e.getStatusCode().value();
-
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] response: {}", e.getResponseBodyAsString());
                 // 處理 Cloudflare challenge 或限制
                 if (statusCode == 403 || statusCode == 429) {
                     Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Received status {}. Retrying after {} seconds...", statusCode, backoffSeconds);
