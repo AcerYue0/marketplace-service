@@ -1,7 +1,6 @@
 package com.example.service;
 
 import com.example.enums.Setting;
-import com.example.util.MarketplaceItemDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
@@ -73,8 +72,9 @@ public class MarketplaceService {
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}, {}", header, body);
                 ResponseEntity<Map> response = safeExchangeWithRetry(request);
 
-                // 每次請求後停止 4 秒
-                Thread.sleep(Setting.FETCH_INTERVAL);
+                // 每次請求後隨機停止 4 ~ 4.5 秒
+                int jitter = new Random().nextInt(500);
+                Thread.sleep(Setting.FETCH_INTERVAL_MILLISECOND + jitter);
 
                 // response解析
                 Map<String, Object> responseMap = (Map<String, Object>) response.getBody();
@@ -177,7 +177,7 @@ public class MarketplaceService {
                     Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Received status {}. Retrying after {} seconds...", statusCode, backoffSeconds);
 
                     try {
-                        Thread.sleep((long) backoffSeconds * Setting.FETCH_INTERVAL);
+                        Thread.sleep((long) backoffSeconds * Setting.FETCH_INTERVAL_MILLISECOND);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         break;
