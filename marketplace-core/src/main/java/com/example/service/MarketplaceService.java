@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -70,12 +71,10 @@ public class MarketplaceService {
                 HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(body), header);
 
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}, {}", header, body);
-                ResponseEntity<Map> response = restTemplate.exchange(Setting.API_URL, HttpMethod.POST, request, Map.class);
-
-                // TODO 429 status code handler
+                ResponseEntity<Map> response = safeExchangeWithRetry(request);
 
                 // 每次請求後停止 4 秒
-                Thread.sleep(4000);
+                Thread.sleep(Setting.FETCH_INTERVAL);
 
                 // response解析
                 Map<String, Object> responseMap = (Map<String, Object>) response.getBody();
@@ -159,6 +158,43 @@ public class MarketplaceService {
         headers.add("Cookie", "urwrt");
         headers.add("Host", "msu.io");
         return headers;
+    }
+
+    private ResponseEntity<Map> safeExchangeWithRetry(HttpEntity<String> request) {
+        int retryCount = 0;
+        int backoffSeconds = 5;
+
+        while (retryCount < Setting.MAX_RETRY) {
+            try {
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] attempt {} to fetch item", retryCount + 1);
+                ResponseEntity<Map> response = restTemplate.exchange(Setting.API_URL, HttpMethod.POST, request, Map.class);
+                return response;
+            } catch (HttpClientErrorException e) {
+                int statusCode = e.getStatusCode().value();
+
+                // 處理 Cloudflare challenge 或限制
+                if (statusCode == 403 || statusCode == 429) {
+                    Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Received status {}. Retrying after {} seconds...", statusCode, backoffSeconds);
+
+                    try {
+                        Thread.sleep((long) backoffSeconds * Setting.FETCH_INTERVAL);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+
+                    retryCount++;
+                    backoffSeconds *= 2; // exponential backoff
+                } else {
+                    throw e; // 其他錯誤直接拋出
+                }
+            } catch (Exception ex) {
+                Setting.GLOBAL_LOGGER.error("[safeExchangeWithRetry] Unexpected error: {}", ex.getMessage(), ex);
+                throw ex;
+            }
+        }
+
+        throw new RuntimeException("Max retries exceeded when calling Marketplace API.");
     }
 
     public Map<String, Object> loadLatestResult() throws IOException {
