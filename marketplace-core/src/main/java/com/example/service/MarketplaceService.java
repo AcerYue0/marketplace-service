@@ -107,11 +107,11 @@ public class MarketplaceService {
                                 nowValue = results.get(name);
                                 if (price.compareTo(nowValue) < 0) {
                                     results.put(name, price);
-                                    mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, results);
+                                    updateSingleEntry(name, price);
                                 }
                             } else {
                                 results.put(name, price);
-                                mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, results);
+                                updateSingleEntry(name, price);
                             }
 
                             // 加入完成搜索列表
@@ -165,6 +165,26 @@ public class MarketplaceService {
         Setting.GLOBAL_LOGGER.trace("[loadLatestResult]");
         return mapper.readValue(Setting.OUTPUT_FILE, new TypeReference<Map<String, Object>>() {
         });
+    }
+
+    // 更新單筆並覆寫到 output.json
+    private void updateSingleEntry(String name, BigDecimal price) throws IOException {
+        Map<String, BigDecimal> fileData = new HashMap<>();
+
+        // 讀取舊資料
+        if (Setting.OUTPUT_FILE.exists()) {
+            try {
+                fileData = mapper.readValue(Setting.OUTPUT_FILE, new TypeReference<Map<String, BigDecimal>>() {});
+            } catch (IOException e) {
+                Setting.GLOBAL_LOGGER.warn("Error reading output file during single update: {}", e.getMessage());
+            }
+        }
+
+        // 比對價格有變才寫入
+        if (!price.equals(fileData.get(name))) {
+            fileData.put(name, price); // 更新單筆
+            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, fileData); // 覆寫整份（保留其他筆）
+        }
     }
 }
 
