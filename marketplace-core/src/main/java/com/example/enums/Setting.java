@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 
 public class Setting {
     public static final int ZERO = 0;
+    public static final int MAX_RETRY = 5;
     public static final int PAGE_SIZE = 1000;
+    public static final int FETCH_INTERVAL_MILLISECOND = 4000;
 
     public static final String API_URL = "https://msu.io/marketplace/api/marketplace/explore/items";
 
