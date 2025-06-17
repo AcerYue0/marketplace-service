@@ -1,0 +1,71 @@
+# 編譯輸出
+target/
+build/
+out/
+dist/
+bin/
+
+# Java 相關
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Maven 相關
+.mvn/
+mvnw
+mvnw.cmd
+
+# Gradle 相關
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# IDE 相關
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+.factorypath
+
+# 日誌檔案
+*.log
+log/
+logs/
+
+# 自動生成的文件
+src/main/generated/
+**/generated/
+**/generated-sources/
+
+# Javadoc
+javadoc/
+
+# 依賴目錄
+node_modules/
+bower_components/
+
+# 其他不需要格式化的檔案
+*.min.js
+*.min.css
+package-lock.json
+yarn.lock
+pom.xml
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.pdf
+*.txt
+*.csv
+*.md
