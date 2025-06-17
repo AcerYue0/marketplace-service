@@ -1,8 +1,12 @@
 package com.example.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.service.FetchAllNFTCollectionItemsTask;
 import com.example.service.TimerService;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/task")
@@ -26,7 +30,7 @@ public class TaskController {
         }
         task.disableCron();
         timerService.start15MinTimer(task); // 非同步排程恢復 cron
-        task.executeFetchTask();     // 手動執行任務
+        task.executeFetchTask(); // 手動執行任務
         return "Manual task executed. Cron disabled for 15 minutes.";
     }
 
