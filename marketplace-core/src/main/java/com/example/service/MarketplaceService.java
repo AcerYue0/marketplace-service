@@ -108,9 +108,8 @@ public class MarketplaceService {
                             BigDecimal price = new BigDecimal(priceWei).divide(BigDecimal.TEN.pow(18), 0,
                                     RoundingMode.DOWN);
                             // 若更低價則更新價格，寫入檔案
-                            BigDecimal nowValue;
                             if (results.get(name) != null) {
-                                nowValue = results.get(name);
+                                BigDecimal nowValue = results.get(name);
                                 if (price.compareTo(nowValue) < 0) {
                                     results.put(name, price);
                                     updateSingleEntry(name, price);
