@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.enums.Setting;
 import com.example.task.FetchAllNFTCollectionItemsTask;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
@@ -14,6 +15,7 @@ public class TimerService {
         try {
             Thread.sleep(15 * 60 * 1000); // 等待15分鐘
             task.enableCron();
+            Setting.GLOBAL_LOGGER.info("Cron re-enabled.");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
