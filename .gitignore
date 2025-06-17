@@ -35,4 +35,5 @@ node_modules
 ### VS Code ###
 .vscode/
 
-marketplace_result.json
+## result output ###
+.tmp/*
