@@ -135,6 +135,7 @@ public class MarketplaceService {
                 pageNo++;
             }
         }
+        Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
     }
 
     private Map<String, Object> createRequestBody(String keyword, int pageNo) {
@@ -160,33 +161,28 @@ public class MarketplaceService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Accept", "*/*");
-        headers.add("User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36");
+        headers.add("User-Agent", "PostmanRuntime/7.44.0");
         headers.add("Connection", "keep-alive");
         headers.add("Cookie", "utwat");
         headers.add("Cookie", "urwrt");
-        headers.add("Host", "msu.io");
+        headers.add("Cookie", "__cf_bm=546zbVM47ssBy6PeOS7UXkAT45G4KB_UlzbnJCA._fQ-1750121071-1.0.1.1-OGby8s_8VHNMoUT7IdQnfVwQUalxUm6.vw2YXf7TGlrp3F9gCWsp0Un5lB38iysXMXvGgfywdmJsWbohIfgzPa94pbRNeumB6V73_C7Fx0c");
         return headers;
     }
 
     private ResponseEntity<Map> safeExchangeWithRetry(HttpEntity<String> request) {
         int retryCount = 0;
         int backoffSeconds = 5;
-
+        // TODO playwright implementation
         while (retryCount < Setting.MAX_RETRY) {
             try {
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] attempt {} to fetch item", retryCount + 1);
-                ResponseEntity<Map> response = restTemplate.exchange(Setting.API_URL, HttpMethod.POST, request,
-                        Map.class);
-                return response;
+                return restTemplate.postForEntity(Setting.API_URL, request, Map.class);
             } catch (HttpClientErrorException e) {
                 int statusCode = e.getStatusCode().value();
-
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] response: {}", e.getResponseBodyAsString());
                 // 處理 Cloudflare challenge 或限制
-                if (statusCode == 403 || statusCode == 429) {
-                    Setting.GLOBAL_LOGGER.warn(
-                            "[safeExchangeWithRetry] Received status {}. Retrying after {} seconds...", statusCode,
-                            backoffSeconds);
+                if (statusCode == 403 || statusCode == 429 || statusCode == 500) {
+                    Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Received status {}. Retrying after {} seconds...", statusCode, backoffSeconds);
 
                     try {
                         Thread.sleep((long) backoffSeconds * Setting.FETCH_INTERVAL_MILLISECOND);
@@ -206,7 +202,8 @@ public class MarketplaceService {
             }
         }
 
-        throw new RuntimeException("Max retries exceeded when calling Marketplace API.");
+        Setting.GLOBAL_LOGGER.error("Max retries exceeded when calling Marketplace API.");
+        return null;
     }
 
     public Map<String, Object> loadLatestResult() throws IOException {
