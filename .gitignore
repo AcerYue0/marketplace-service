@@ -18,6 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
+*.log
+*.class
 
 ### NetBeans ###
 /nbproject/private/
@@ -28,8 +30,10 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+node_modules
 
 ### VS Code ###
 .vscode/
 
-marketplace_result.json
+## result output ###
+.tmp/*
