@@ -72,7 +72,6 @@ public class MarketplaceService {
             // 初始化迴圈值
             int pageNo = 1;
             boolean hasMorePage = true;
-            boolean foundAllValue = false;
             Set<String> foundValues = new HashSet<>();
 
             while (hasMorePage) {
@@ -135,18 +134,13 @@ public class MarketplaceService {
                 }
 
                 // 若所有 values 都已被找到，跳出迴圈
-                if (foundValues.containsAll(values)) {
-                    foundAllValue = true;
+                if (foundValues.containsAll(values))
                     break;
-                }
 
                 // 檢查是否為最後一頁，若有下一頁繼續迴圈
                 hasMorePage = !(Boolean) pagination.get("isLastPage");
                 pageNo++;
             }
-
-            if (foundAllValue)
-                break;
 
             // 處理這次搜尋中未找到的 values
             for (String value : values) {
