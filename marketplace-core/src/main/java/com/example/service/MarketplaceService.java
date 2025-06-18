@@ -148,11 +148,19 @@ public class MarketplaceService {
             // 處理這次搜尋中未找到的 values
             for (String value : values) {
                 if (!foundValues.contains(value)) {
+                    Map<String, Object> valueItem;
                     // 記錄未找到的 value 為 -1
                     BigDecimal invalidPrice = BigDecimal.valueOf(-1);
-                    results.put(value, createEntry(invalidPrice, -1L));
-                    updateSingleEntry(value, invalidPrice, -1L);
-                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
+                    try {
+                        valueItem = results.get(value);
+                        Long valueItemCategory = Long.parseLong(valueItem.get("CategoryNo").toString());
+                        updateSingleEntry(value, invalidPrice, valueItemCategory);
+                    } catch (Exception e) {
+                        Setting.GLOBAL_LOGGER.warn("[fetchAndSaveLowestPrices] Item not found in exist file: {}", value);
+                        updateSingleEntry(value, invalidPrice, -1L);
+                    } finally {
+                        Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
+                    }
                 }
             }
         }
