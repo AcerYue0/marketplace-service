@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -64,6 +65,7 @@ public class MarketplaceService {
             // 初始化迴圈值
             int pageNo = 1;
             boolean hasMorePage = true;
+            boolean foundAllValue = false;
             Set<String> foundValues = new HashSet<>();
 
             while (hasMorePage) {
@@ -126,8 +128,10 @@ public class MarketplaceService {
                 }
 
                 // 若所有 values 都已被找到，跳出迴圈
-                if (foundValues.containsAll(values))
+                if (foundValues.containsAll(values)) {
+                    foundAllValue = true;
                     break;
+                }
 
                 // 檢查是否為最後一頁，若有下一頁繼續迴圈
                 hasMorePage = !(Boolean) pagination.get("isLastPage");
