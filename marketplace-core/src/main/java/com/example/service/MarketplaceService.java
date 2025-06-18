@@ -137,6 +137,20 @@ public class MarketplaceService {
                 hasMorePage = !(Boolean) pagination.get("isLastPage");
                 pageNo++;
             }
+
+            if (foundAllValue)
+                break;
+
+            // 處理這次搜尋中未找到的 values
+            for (String value : values) {
+                if (!foundValues.contains(value)) {
+                    // 記錄未找到的 value 為 -1
+                    BigDecimal invalidPrice = BigDecimal.valueOf(-1);
+                    results.put(value, invalidPrice);
+                    updateSingleEntry(value, invalidPrice);
+                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found, set price -1: {}", value);
+                }
+            }
         }
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
     }
