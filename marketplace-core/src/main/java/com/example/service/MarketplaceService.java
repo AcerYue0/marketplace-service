@@ -52,10 +52,12 @@ public class MarketplaceService {
                     String name = (String) entry.get("name");
                     BigDecimal price = new BigDecimal(entry.get("price").toString());
                     Long updateTimeUTC = Long.parseLong(entry.get("updateTimeUTC").toString());
+                    Long categoryNo = Long.parseLong(entry.get("categoryNo").toString());
 
                     Map<String, Object> info = new HashMap<>();
                     info.put("price", price);
                     info.put("updateTimeUTC", updateTimeUTC);
+                    info.put("categoryNo", categoryNo);
 
                     results.put(name, info);
                 }
@@ -79,11 +81,11 @@ public class MarketplaceService {
                 HttpHeaders header = createHeaders();
                 HttpEntity<String> request = new HttpEntity<>(mapper.writeValueAsString(body), header);
 
-                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}, {}", header, body);
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}", keyword);
                 ResponseEntity<Map> response = safeExchangeWithRetry(request);
 
-                // 每次請求後隨機停止 4 ~ 4.5 秒
-                int jitter = new Random().nextInt(500);
+                // 每次請求後隨機停止 4 ~ 4.2 秒
+                int jitter = new Random().nextInt(200);
                 Thread.sleep(Setting.FETCH_INTERVAL_MILLISECOND + jitter);
 
                 // response解析
@@ -102,12 +104,13 @@ public class MarketplaceService {
                     break;
                 }
 
-                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] fetch complete and item found, row response: {}",
-                        response);
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] fetch complete and item found");
 
                 if (items != null) {
                     for (Map<String, Object> item : items) {
                         String name = (String) item.get("name");
+                        Map<String, Object> category = (Map<String, Object>) item.get("category");
+                        Long categoryNo = Long.parseLong(category.get("categoryNo").toString());
                         if (values.stream().anyMatch(name::contains)) {
                             Map<String, Object> salesInfo = (Map<String, Object>) item.get("salesInfo");
                             String priceWei = (String) salesInfo.get("priceWei");
@@ -119,12 +122,12 @@ public class MarketplaceService {
                             if (results.get(name) != null) {
                                 Map<String, Object> nowValue = results.get(name);
                                 if (price.compareTo((BigDecimal) nowValue.get("price")) < 0) {
-                                    results.put(name, createEntry(price));
-                                    updateSingleEntry(name, price);
+                                    results.put(name, createEntry(price, categoryNo));
+                                    updateSingleEntry(name, price, categoryNo);
                                 }
                             } else {
-                                results.put(name, createEntry(price));
-                                updateSingleEntry(name, price);
+                                results.put(name, createEntry(price, categoryNo));
+                                updateSingleEntry(name, price, categoryNo);
                             }
 
                             // 加入完成搜索列表
@@ -147,9 +150,9 @@ public class MarketplaceService {
                 if (!foundValues.contains(value)) {
                     // 記錄未找到的 value 為 -1
                     BigDecimal invalidPrice = BigDecimal.valueOf(-1);
-                    results.put(value, createEntry(invalidPrice));
-                    updateSingleEntry(value, invalidPrice);
-                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found, set price -1: {}", value);
+                    results.put(value, createEntry(invalidPrice, -1L));
+                    updateSingleEntry(value, invalidPrice, -1L);
+                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
                 }
             }
         }
@@ -231,7 +234,7 @@ public class MarketplaceService {
     }
 
     // 更新單筆並覆寫到 output.json
-    private void updateSingleEntry(String name, BigDecimal price) throws IOException {
+    private void updateSingleEntry(String name, BigDecimal price, Long categoryNo) throws IOException {
         Map<String, Map<String, Object>> fileData = new HashMap<>();
         File parentDir = Setting.OUTPUT_FILE.getParentFile();
         if (!parentDir.exists()) {
@@ -256,7 +259,7 @@ public class MarketplaceService {
 
         // 比對價格有變才寫入
         if (oldPrice == null || price.compareTo(oldPrice) != 0) {
-            Map<String, Object> entry = createEntry(price);
+            Map<String, Object> entry = createEntry(price, categoryNo);
             fileData.put(name, entry);
 
             // 排序
@@ -273,10 +276,11 @@ public class MarketplaceService {
         }
     }
 
-    private Map<String, Object> createEntry(BigDecimal price) {
+    private Map<String, Object> createEntry(BigDecimal price, Long categoryNo) {
         Map<String, Object> entry = new HashMap<>();
         entry.put("price", price);
         entry.put("updateTimeUTC", Instant.now().getEpochSecond());
+        entry.put("categoryNo", categoryNo);
         return entry;
     }
 }
