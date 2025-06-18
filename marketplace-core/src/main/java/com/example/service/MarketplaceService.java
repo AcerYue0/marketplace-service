@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,17 +42,22 @@ public class MarketplaceService {
             }
         }
 
-        Map<String, BigDecimal> results = new HashMap<>();
+        Map<String, Map<String, Object>> results = new HashMap<>();
         // 若已有 output.json，先載入舊資料
         if (Setting.OUTPUT_FILE.exists()) {
             try {
                 List<Map<String, Object>> oldList = mapper.readValue(Setting.OUTPUT_FILE,
-                        new TypeReference<List<Map<String, Object>>>() {
-                        });
+                    new TypeReference<List<Map<String, Object>>>() {});
                 for (Map<String, Object> entry : oldList) {
                     String name = (String) entry.get("name");
-                    BigDecimal price = (BigDecimal) entry.get("price");
-                    results.put(name, price);
+                    BigDecimal price = new BigDecimal(entry.get("price").toString());
+                    Long updateTimeUTC = Long.parseLong(entry.get("updateTimeUTC").toString());
+
+                    Map<String, Object> info = new HashMap<>();
+                    info.put("price", price);
+                    info.put("updateTimeUTC", updateTimeUTC);
+
+                    results.put(name, info);
                 }
             } catch (IOException e) {
                 Setting.GLOBAL_LOGGER.info("Failed to read existing output.json, starting fresh.");
@@ -112,13 +118,13 @@ public class MarketplaceService {
                                     RoundingMode.DOWN);
                             // 若更低價則更新價格，寫入檔案
                             if (results.get(name) != null) {
-                                BigDecimal nowValue = results.get(name);
-                                if (price.compareTo(nowValue) < 0) {
-                                    results.put(name, price);
+                                Map<String, Object> nowValue = results.get(name);
+                                if (price.compareTo((BigDecimal) nowValue.get("price")) < 0) {
+                                    results.put(name, createEntry(price));
                                     updateSingleEntry(name, price);
                                 }
                             } else {
-                                results.put(name, price);
+                                results.put(name, createEntry(price));
                                 updateSingleEntry(name, price);
                             }
 
@@ -147,7 +153,7 @@ public class MarketplaceService {
                 if (!foundValues.contains(value)) {
                     // 記錄未找到的 value 為 -1
                     BigDecimal invalidPrice = BigDecimal.valueOf(-1);
-                    results.put(value, invalidPrice);
+                    results.put(value, createEntry(invalidPrice));
                     updateSingleEntry(value, invalidPrice);
                     Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found, set price -1: {}", value);
                 }
@@ -232,16 +238,16 @@ public class MarketplaceService {
 
     // 更新單筆並覆寫到 output.json
     private void updateSingleEntry(String name, BigDecimal price) throws IOException {
-        Map<String, BigDecimal> fileData = new HashMap<>();
+        Map<String, Map<String, Object>> fileData = new HashMap<>();
         File parentDir = Setting.OUTPUT_FILE.getParentFile();
         if (!parentDir.exists()) {
-            parentDir.mkdirs(); // 確保 ./tmp/data/ 存在
+            parentDir.mkdirs(); // 確保資料夾存在
         }
+
         // 讀取舊資料
         if (Setting.OUTPUT_FILE.exists()) {
             try {
-                fileData = mapper.readValue(Setting.OUTPUT_FILE, new TypeReference<Map<String, BigDecimal>>() {
-                });
+                fileData = mapper.readValue(Setting.OUTPUT_FILE, new TypeReference<Map<String, Map<String, Object>>>(){});
             } catch (IOException e) {
                 Setting.GLOBAL_LOGGER.warn("Error reading output file during single update: {}", e.getMessage());
             }
@@ -249,19 +255,34 @@ public class MarketplaceService {
             mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, "{}");
         }
 
+        Map<String, Object> existing = fileData.get(name);
+        BigDecimal oldPrice = existing != null && existing.get("price") != null
+            ? new BigDecimal(existing.get("price").toString())
+            : null;
+
         // 比對價格有變才寫入
-        if (!price.equals(fileData.get(name))) {
-            fileData.put(name, price); // 更新單筆
-            // 排序並保留順序
-            LinkedHashMap<String, BigDecimal> sortedFileData = fileData.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue()) // 可改為 .reversed() 做降序
+        if (oldPrice == null || price.compareTo(oldPrice) != 0) {
+            Map<String, Object> entry = createEntry(price);
+            fileData.put(name, entry);
+
+            // 排序
+            LinkedHashMap<String, Map<String, Object>> sorted = fileData.entrySet().stream()
+                .sorted(Comparator.comparing(e -> new BigDecimal(e.getValue().get("price").toString())))
                 .collect(Collectors.toMap(
                     Map.Entry::getKey,
                     Map.Entry::getValue,
                     (e1, e2) -> e1,
                     LinkedHashMap::new
                 ));
-            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, sortedFileData); // 覆寫整份（保留其他筆）
+
+            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, sorted);
         }
+    }
+
+    private Map<String, Object> createEntry(BigDecimal price) {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("price", price);
+        entry.put("updateTimeUTC", Instant.now().getEpochSecond());
+        return entry;
     }
 }

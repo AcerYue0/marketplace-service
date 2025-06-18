@@ -399,13 +399,6 @@
     "Zakum's Poisonic Wand",
     "Zakum's Tree Branch"
   ],
-  "Chicken": [
-    "Chicken",
-    "Chicken Charm",
-    "Chicken Coataroo",
-    "Chicken Glovaroo",
-    "Chicken Hataroo"
-  ],
   "Charm": [
     "Chicken Charm",
     "Death Sender Charm",
@@ -1069,12 +1062,21 @@
     "Voltarix Suit",
     "Voltarix Wings"
   ],
+  "Chick": [
+    "Baby Chick Label Ring",
+    "Baby Chick Chat Ring",
+    "Chicky-Chicky Boom",
+    "Chicky Pile",
+    "Chicken",
+    "Chicken Charm",
+    "Chicken Coataroo",
+    "Chicken Glovaroo",
+    "Chicken Hataroo"
+  ],
   "others": [
     "Athena Pierce's Class",
     "Attitude Cap",
     "Aurora Jewel Mount",
-    "Baby Chick Label Ring",
-    "Baby Chick Chat Ring",
     "Bamboo Sword",
     "Banana Peel Shoes",
     "Bandage Strip",
@@ -1086,8 +1088,6 @@
     "Camel Wagon",
     "Cape Uniform Shoes A",
     "Cape Uniform Shoes B",
-    "Chicky-Chicky Boom",
-    "Chicky Pile",
     "Chief Hat",
     "Colorful Camo Beanie",
     "Condensed Power Crystal",
