@@ -25,9 +25,9 @@ public class TaskController {
             return "Too many requests. Please wait after last execution finished.";
         }
         task.disableCron();
-        timerService.start15MinTimer(task); // 非同步排程恢復 cron
+        timerService.start20MinTimer(task); // 非同步排程恢復 cron
         task.executeFetchTask(); // 手動執行任務
-        return "Manual task executed. Cron disabled for 15 minutes.";
+        return "Manual task executed. Cron disabled for 20 minutes.";
     }
 
     // TODO add getlist to call /api/marketplace/getList

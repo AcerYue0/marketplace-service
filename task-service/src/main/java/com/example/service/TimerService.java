@@ -11,9 +11,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class TimerService {
 
     @Async
-    public void start15MinTimer(FetchAllNFTCollectionItemsTask task) {
+    public void start20MinTimer(FetchAllNFTCollectionItemsTask task) {
         try {
-            Thread.sleep(15 * 60 * 1000); // 等待15分鐘
+            Thread.sleep(20 * 60 * 1000); // 等待15分鐘
             task.enableCron();
             Setting.GLOBAL_LOGGER.info("Cron re-enabled.");
         } catch (InterruptedException e) {
