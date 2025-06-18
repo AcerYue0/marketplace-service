@@ -84,8 +84,8 @@ public class MarketplaceService {
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}", keyword);
                 ResponseEntity<Map> response = safeExchangeWithRetry(request);
 
-                // 每次請求後隨機停止 4 ~ 4.5 秒
-                int jitter = new Random().nextInt(500);
+                // 每次請求後隨機停止 4 ~ 4.2 秒
+                int jitter = new Random().nextInt(200);
                 Thread.sleep(Setting.FETCH_INTERVAL_MILLISECOND + jitter);
 
                 // response解析
