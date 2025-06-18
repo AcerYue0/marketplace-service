@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketplaceService {
@@ -64,6 +66,7 @@ public class MarketplaceService {
             // 初始化迴圈值
             int pageNo = 1;
             boolean hasMorePage = true;
+            boolean foundAllValue = false;
             Set<String> foundValues = new HashSet<>();
 
             while (hasMorePage) {
@@ -126,12 +129,28 @@ public class MarketplaceService {
                 }
 
                 // 若所有 values 都已被找到，跳出迴圈
-                if (foundValues.containsAll(values))
+                if (foundValues.containsAll(values)) {
+                    foundAllValue = true;
                     break;
+                }
 
                 // 檢查是否為最後一頁，若有下一頁繼續迴圈
                 hasMorePage = !(Boolean) pagination.get("isLastPage");
                 pageNo++;
+            }
+
+            if (foundAllValue)
+                break;
+
+            // 處理這次搜尋中未找到的 values
+            for (String value : values) {
+                if (!foundValues.contains(value)) {
+                    // 記錄未找到的 value 為 -1
+                    BigDecimal invalidPrice = BigDecimal.valueOf(-1);
+                    results.put(value, invalidPrice);
+                    updateSingleEntry(value, invalidPrice);
+                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found, set price -1: {}", value);
+                }
             }
         }
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
@@ -214,7 +233,10 @@ public class MarketplaceService {
     // 更新單筆並覆寫到 output.json
     private void updateSingleEntry(String name, BigDecimal price) throws IOException {
         Map<String, BigDecimal> fileData = new HashMap<>();
-
+        File parentDir = Setting.OUTPUT_FILE.getParentFile();
+        if (!parentDir.exists()) {
+            parentDir.mkdirs(); // 確保 ./tmp/data/ 存在
+        }
         // 讀取舊資料
         if (Setting.OUTPUT_FILE.exists()) {
             try {
@@ -223,12 +245,23 @@ public class MarketplaceService {
             } catch (IOException e) {
                 Setting.GLOBAL_LOGGER.warn("Error reading output file during single update: {}", e.getMessage());
             }
+        } else {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, "{}");
         }
 
         // 比對價格有變才寫入
         if (!price.equals(fileData.get(name))) {
             fileData.put(name, price); // 更新單筆
-            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, fileData); // 覆寫整份（保留其他筆）
+            // 排序並保留順序
+            LinkedHashMap<String, BigDecimal> sortedFileData = fileData.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue()) // 可改為 .reversed() 做降序
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (e1, e2) -> e1,
+                    LinkedHashMap::new
+                ));
+            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, sortedFileData); // 覆寫整份（保留其他筆）
         }
     }
 }
