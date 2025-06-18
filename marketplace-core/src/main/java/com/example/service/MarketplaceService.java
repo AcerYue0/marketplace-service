@@ -226,6 +226,8 @@ public class MarketplaceService {
             } catch (IOException e) {
                 Setting.GLOBAL_LOGGER.warn("Error reading output file during single update: {}", e.getMessage());
             }
+        } else {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, "{}");
         }
 
         // 比對價格有變才寫入
