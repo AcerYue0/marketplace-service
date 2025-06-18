@@ -214,7 +214,10 @@ public class MarketplaceService {
     // 更新單筆並覆寫到 output.json
     private void updateSingleEntry(String name, BigDecimal price) throws IOException {
         Map<String, BigDecimal> fileData = new HashMap<>();
-
+        File parentDir = Setting.OUTPUT_FILE.getParentFile();
+        if (!parentDir.exists()) {
+            parentDir.mkdirs(); // 確保 ./tmp/data/ 存在
+        }
         // 讀取舊資料
         if (Setting.OUTPUT_FILE.exists()) {
             try {
