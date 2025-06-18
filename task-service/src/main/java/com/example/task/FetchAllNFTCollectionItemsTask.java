@@ -15,7 +15,7 @@ public class FetchAllNFTCollectionItemsTask {
     private static volatile boolean cronEnabled = true;
     private static volatile boolean isSkiped = false;
 
-    @Scheduled(cron = "0 */15 * * * *")
+    @Scheduled(cron = "0 */20 * * * *")
     public void runScheduledTask() {
         Setting.GLOBAL_LOGGER.info("[runScheduledTask]");
         if (!cronEnabled) {
