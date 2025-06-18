@@ -110,7 +110,7 @@ public class MarketplaceService {
                     for (Map<String, Object> item : items) {
                         String name = (String) item.get("name");
                         Map<String, Object> category = (Map<String, Object>) item.get("category");
-                        Long categoryNo = (Long) category.get("categoryNo");
+                        Long categoryNo = Long.parseLong(category.get("categoryNo").toString());
                         if (values.stream().anyMatch(name::contains)) {
                             Map<String, Object> salesInfo = (Map<String, Object>) item.get("salesInfo");
                             String priceWei = (String) salesInfo.get("priceWei");
@@ -150,9 +150,9 @@ public class MarketplaceService {
                 if (!foundValues.contains(value)) {
                     // 記錄未找到的 value 為 -1
                     BigDecimal invalidPrice = BigDecimal.valueOf(-1);
-                    results.put(value, createEntry(invalidPrice, 0L));
-                    updateSingleEntry(value, invalidPrice, 0L);
-                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found, set price -1: {}", value);
+                    results.put(value, createEntry(invalidPrice, -1L));
+                    updateSingleEntry(value, invalidPrice, -1L);
+                    Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
                 }
             }
         }
