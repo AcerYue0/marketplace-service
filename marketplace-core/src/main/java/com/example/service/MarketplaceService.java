@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketplaceService {
@@ -251,7 +252,16 @@ public class MarketplaceService {
         // 比對價格有變才寫入
         if (!price.equals(fileData.get(name))) {
             fileData.put(name, price); // 更新單筆
-            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, fileData); // 覆寫整份（保留其他筆）
+            // 排序並保留順序
+            LinkedHashMap<String, BigDecimal> sortedFileData = fileData.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue()) // 可改為 .reversed() 做降序
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (e1, e2) -> e1,
+                    LinkedHashMap::new
+                ));
+            mapper.writerWithDefaultPrettyPrinter().writeValue(Setting.OUTPUT_FILE, sortedFileData); // 覆寫整份（保留其他筆）
         }
     }
 }
