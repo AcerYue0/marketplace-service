@@ -1,0 +1,31 @@
+name: Build & Run Marketplace Service
+
+on:
+  workflow_dispatch:  # 手動觸發
+  schedule:
+    - cron: '*/20 * * * *'  # 每20分鐘執行一次（UTC）
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build all modules
+        run: ./mvnw clean install -DskipTests
+
+      - name: Run Task Application (Manual Trigger)
+        run: java -cp task-service/target/task-service-*.jar com.example.TaskServiceApplication
+        
+      - name: Write keyword_classification.json
+        run: |
+            mkdir -p marketplace-core/src/main/resources/
+            echo '${{ secrets.KEYWORD_JSON }}' > marketplace-core/src/main/resources/keyword_classification.json
