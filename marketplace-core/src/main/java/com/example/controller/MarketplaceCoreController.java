@@ -39,11 +39,12 @@ public class MarketplaceCoreController {
     @GetMapping("/getList")
     public ResponseEntity<?> getMarketplaceList() {
         try {
+            Setting.GLOBAL_LOGGER.info("[/api/marketplace/getList] Getting price data");
             return ResponseEntity.ok(marketplaceService.loadLatestResult());
         } catch (FileNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to load marketplace data.");
+            return ResponseEntity.status(500).body("Failed to load price data.");
         }
     }
 }
