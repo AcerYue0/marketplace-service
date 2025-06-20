@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.enums.Setting;
 import com.example.task.FetchAllNFTCollectionItemsTask;
 import com.example.service.TimerService;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class TaskController {
      */
     @PostMapping("/trigger")
     public String manualTrigger() {
+        Setting.GLOBAL_LOGGER.trace("[manualTrigger]");
         if (!task.isCronEnabled()) {
             return "Too many requests. Please wait after last execution finished.";
         }
@@ -30,13 +32,12 @@ public class TaskController {
         return "Manual task executed. Cron disabled for 20 minutes.";
     }
 
-    // TODO add getlist to call /api/marketplace/getList
-
     /**
      * 啟用 cron 排程
      */
     @PostMapping("/cronEnable")
     public String enableCron() {
+        Setting.GLOBAL_LOGGER.trace("[enableCron]");
         task.enableCron();
         return "Cron enabled.";
     }
@@ -46,6 +47,7 @@ public class TaskController {
      */
     @PostMapping("/cronDisable")
     public String disableCron() {
+        Setting.GLOBAL_LOGGER.trace("[disableCron]");
         task.disableCron();
         return "Cron disabled.";
     }
@@ -55,6 +57,7 @@ public class TaskController {
      */
     @GetMapping("/cronStatus")
     public String cronStatus() {
+        Setting.GLOBAL_LOGGER.trace("[cronStatus]");
         return task.isCronEnabled() ? "Cron is ENABLED." : "Cron is DISABLED.";
     }
 }
