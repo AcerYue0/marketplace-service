@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/data")
 public class GetDataController {
 
-    private GetNFTCollectionItemsValueTask task;
+    private final GetNFTCollectionItemsValueTask task;
 
     public GetDataController(GetNFTCollectionItemsValueTask task) {
         this.task = task;

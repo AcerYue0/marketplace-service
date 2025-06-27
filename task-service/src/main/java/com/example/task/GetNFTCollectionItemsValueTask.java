@@ -2,8 +2,10 @@ package com.example.task;
 
 import com.example.enums.Setting;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Service
 public class GetNFTCollectionItemsValueTask {
     private final RestTemplate restTemplate = new RestTemplate();
 
