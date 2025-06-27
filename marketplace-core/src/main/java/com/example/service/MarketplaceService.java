@@ -172,12 +172,6 @@ public class MarketplaceService {
         Map<String, Object> body = new HashMap<>();
         Map<String, Object> filter = new HashMap<>();
         filter.put("name", keyword);
-        filter.put("categoryNo", 0);
-        filter.put("price", Map.of("min", Setting.ZERO, "max", 500000));
-        filter.put("level", Map.of("min", Setting.ZERO, "max", 250));
-        filter.put("starforce", Map.of("min", Setting.ZERO, "max", 25));
-        filter.put("potential", Map.of("min", Setting.ZERO, "max", 4));
-        filter.put("bonusPotential", Map.of("min", Setting.ZERO, "max", 4));
 
         body.put("filter", filter);
         body.put("sorting", "ExploreSorting_LOWEST_PRICE");
