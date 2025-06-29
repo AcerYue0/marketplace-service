@@ -1,0 +1,7 @@
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY .. .
+RUN ./mvnw clean package -DskipTests
+ENV PORT=8082
+EXPOSE 8082
+CMD ["java", "-jar", "marketplace-core/target/marketplace-core-0.0.1-SNAPSHOT.jar"]
