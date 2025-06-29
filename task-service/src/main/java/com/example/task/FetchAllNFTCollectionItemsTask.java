@@ -32,7 +32,7 @@ public class FetchAllNFTCollectionItemsTask {
     public void executeFetchTask() {
         Setting.GLOBAL_LOGGER.info("[executeFetchTask]");
         try {
-            restTemplate.postForEntity("http://localhost:8082/api/marketplace/fetchList", null, String.class);
+            restTemplate.postForEntity("https://marketplace-core-ll9s.onrender.com/api/marketplace/fetchList", null, String.class);
         } catch (Exception e) {
             Setting.GLOBAL_LOGGER.info(String.valueOf(e));
         }

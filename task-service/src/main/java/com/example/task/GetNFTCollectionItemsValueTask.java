@@ -27,7 +27,7 @@ public class GetNFTCollectionItemsValueTask {
 
         try {
             response = restTemplate.getForEntity(
-                "http://localhost:8082/api/marketplace/getList",
+                "https://marketplace-core-ll9s.onrender.com/api/marketplace/getList",
                 String.class
             );
 
