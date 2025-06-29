@@ -1,6 +1,7 @@
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY .. .
+RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests
 ENV PORT=8082
 EXPOSE 8082
