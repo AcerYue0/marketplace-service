@@ -55,7 +55,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.example.MarketplaceAPICoreApplication.Application</mainClass>
+              <mainClass>com.example.MarketplaceAPICoreApplication</mainClass>
             </manifest>
           </archive>
         </configuration>
