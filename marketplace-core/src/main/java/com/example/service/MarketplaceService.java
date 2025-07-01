@@ -3,9 +3,11 @@ package com.example.service;
 import com.example.enums.Setting;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
@@ -22,6 +24,9 @@ public class MarketplaceService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @Autowired
+    private PlaywrightService playwrightService;
 
     public void fetchAndSaveLowestPrices() throws IOException, InterruptedException {
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices]");
@@ -89,6 +94,7 @@ public class MarketplaceService {
                 Thread.sleep(Setting.FETCH_INTERVAL_MILLISECOND + jitter);
 
                 // response解析
+                assert response != null;
                 Map<String, Object> responseMap = (Map<String, Object>) response.getBody();
                 if (responseMap == null) {
                     Setting.GLOBAL_LOGGER
@@ -109,6 +115,7 @@ public class MarketplaceService {
                 if (items != null) {
                     for (Map<String, Object> item : items) {
                         String name = (String) item.get("name");
+                        String imgUrl = (String) item.get("imageUrl");
                         Map<String, Object> category = (Map<String, Object>) item.get("category");
                         Long categoryNo = Long.parseLong(category.get("categoryNo").toString());
                         if (values.stream().anyMatch(name::contains)) {
@@ -122,12 +129,12 @@ public class MarketplaceService {
                             if (results.get(name) != null) {
                                 Map<String, Object> nowValue = results.get(name);
                                 if (price.compareTo((BigDecimal) nowValue.get("price")) < 0) {
-                                    results.put(name, createEntry(price, categoryNo));
-                                    updateSingleEntry(name, price, categoryNo);
+                                    results.put(name, createEntry(price, categoryNo, imgUrl));
+                                    updateSingleEntry(name, price, categoryNo, imgUrl);
                                 }
                             } else {
-                                results.put(name, createEntry(price, categoryNo));
-                                updateSingleEntry(name, price, categoryNo);
+                                results.put(name, createEntry(price, categoryNo, imgUrl));
+                                updateSingleEntry(name, price, categoryNo, imgUrl);
                             }
 
                             // 加入完成搜索列表
@@ -154,10 +161,9 @@ public class MarketplaceService {
                     try {
                         valueItem = results.get(value);
                         Long valueItemCategory = Long.parseLong(valueItem.get("CategoryNo").toString());
-                        updateSingleEntry(value, invalidPrice, valueItemCategory);
+                        updateSingleEntry(value, invalidPrice, valueItemCategory, "");
                     } catch (Exception e) {
-                        Setting.GLOBAL_LOGGER.warn("[fetchAndSaveLowestPrices] Item not found in exist file: {}", value);
-                        updateSingleEntry(value, invalidPrice, -1L);
+                        updateSingleEntry(value, invalidPrice, -1L, "");
                     } finally {
                         Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
                     }
@@ -195,18 +201,34 @@ public class MarketplaceService {
     private ResponseEntity<Map> safeExchangeWithRetry(HttpEntity<String> request) {
         int retryCount = 0;
         int backoffSeconds = 5;
-        // TODO playwright implementation
+
         while (retryCount < Setting.MAX_RETRY) {
             try {
-                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] attempt {} to fetch item", retryCount + 1);
+                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Attempt {} to fetch item", retryCount + 1);
                 return restTemplate.postForEntity(Setting.API_URL, request, Map.class);
             } catch (HttpClientErrorException e) {
-                int statusCode = e.getStatusCode().value();
-                Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] response: {}", e.getResponseBodyAsString());
-                // 處理 Cloudflare challenge 或限制
-                if (statusCode == 403 || statusCode == 429 || statusCode == 500) {
-                    Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Received status {}. Retrying after {} seconds...", statusCode, backoffSeconds);
+                int status = e.getStatusCode().value();
+                Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] HTTP {}: {}", status, e.getResponseBodyAsString());
 
+                // 針對 403 / 429 / 500 啟用 Playwright fallback
+                if (status == 403 || status == 429 || status == 500) {
+                    Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Received status {}. Trying Playwright fallback...", status);
+
+                    try {
+                        String json = fetchDataWithPlaywright(request);
+
+                        if (json != null && json.trim().startsWith("{")) {
+                            Map<String, Object> result = mapper.readValue(json, new TypeReference<>() {});
+                            return new ResponseEntity<>(result, HttpStatus.OK);
+                        } else {
+                            Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Playwright response is not valid JSON. Content: {}", truncate(json));
+                        }
+
+                    } catch (Exception ex) {
+                        Setting.GLOBAL_LOGGER.error("[safeExchangeWithRetry] Playwright fallback failed: {}", ex.getMessage(), ex);
+                    }
+
+                    // Backoff 再重試
                     try {
                         Thread.sleep((long) backoffSeconds * Setting.FETCH_INTERVAL_MILLISECOND);
                     } catch (InterruptedException ie) {
@@ -215,18 +237,61 @@ public class MarketplaceService {
                     }
 
                     retryCount++;
-                    backoffSeconds *= 2; // exponential backoff
-                } else {
-                    throw e; // 其他錯誤直接拋出
+                    backoffSeconds *= 2;
+                    continue;
+                } else if (status == 302) {
+                    Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Host server in maintenance. Stop anyway");
+                    return null;
                 }
+                throw e;
             } catch (Exception ex) {
                 Setting.GLOBAL_LOGGER.error("[safeExchangeWithRetry] Unexpected error: {}", ex.getMessage(), ex);
                 throw ex;
             }
         }
 
-        Setting.GLOBAL_LOGGER.error("Max retries exceeded when calling Marketplace API.");
+        Setting.GLOBAL_LOGGER.error("[safeExchangeWithRetry] Max retries exceeded.");
         return null;
+    }
+
+    private String fetchDataWithPlaywright(HttpEntity<String> originalRequest) {
+        String targetUrl = "https://msu.io/marketplace";
+        String apiUrl = Setting.API_URL;
+        String cookie = playwrightService.getCookiesAfterJsChallenge(targetUrl);
+
+        // 🔁 用 RestTemplate 打 API（帶 Cookie）
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Cookie", cookie);
+
+        // 可以複製原始 request 的 body，保留 body 傳遞
+        HttpEntity<String> newRequest = new HttpEntity<>(originalRequest.getBody(), headers);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.POST,
+                newRequest,
+                String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                String body = response.getBody();
+                Setting.GLOBAL_LOGGER.info("[fetchDataWithPlaywright] API success. Response: {}", truncate(body));
+                return body;
+            } else {
+                Setting.GLOBAL_LOGGER.warn("[fetchDataWithPlaywright] API call failed. Status: {}", response.getStatusCode());
+            }
+
+        } catch (HttpStatusCodeException httpEx) {
+            Setting.GLOBAL_LOGGER.error("[fetchDataWithPlaywright] HTTP error: {} - {}", httpEx.getStatusCode(), httpEx.getResponseBodyAsString());
+        }
+
+        return null;
+    }
+
+    private String truncate(String str) {
+        if (str == null) return null;
+        return str.length() <= 300 ? str : str.substring(0, 300) + "...(truncated)";
     }
 
     public Map<String, Object> loadLatestResult() throws IOException {
@@ -236,7 +301,7 @@ public class MarketplaceService {
     }
 
     // 更新單筆並覆寫到 output.json
-    private void updateSingleEntry(String name, BigDecimal price, Long categoryNo) throws IOException {
+    private void updateSingleEntry(String name, BigDecimal price, Long categoryNo, String imgUrl) throws IOException {
         Map<String, Map<String, Object>> fileData = new HashMap<>();
         File parentDir = Setting.OUTPUT_FILE.getParentFile();
         if (!parentDir.exists()) {
@@ -261,7 +326,7 @@ public class MarketplaceService {
 
         // 比對價格有變才寫入
         if (oldPrice == null || price.compareTo(oldPrice) != 0) {
-            Map<String, Object> entry = createEntry(price, categoryNo);
+            Map<String, Object> entry = createEntry(price, categoryNo, imgUrl);
             fileData.put(name, entry);
 
             // 排序
@@ -278,9 +343,10 @@ public class MarketplaceService {
         }
     }
 
-    private Map<String, Object> createEntry(BigDecimal price, Long categoryNo) {
+    private Map<String, Object> createEntry(BigDecimal price, Long categoryNo, String imgUrl) {
         Map<String, Object> entry = new HashMap<>();
         entry.put("price", price);
+        entry.put("imgUrl", imgUrl);
         entry.put("updateTimeUTC", Instant.now().getEpochSecond());
         entry.put("categoryNo", categoryNo);
         return entry;
