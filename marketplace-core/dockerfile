@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
   libgbm1 \
   libxcb1 \
   libxkbcommon0 \
-  libasound2 \
+  libasound2t64 \
   wget \
   unzip \
   && apt-get clean
