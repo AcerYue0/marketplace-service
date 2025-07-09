@@ -1,9 +1,4 @@
 {
-  "Shadow": [
-    "5 O'Clock Shadow",
-    "Evolving Slashing Shadow",
-    "Slashing Shadow"
-  ],
   "Chair": [
     "Ancient Tank Chair",
     "Arkarium Storytime Chair",
@@ -831,6 +826,12 @@
     "Red-Feathered Bandana"
   ],
   "Pirate": [
+    "AbsoLab Pirate Fedora",
+    "AbsoLab Pirate Suit",
+    "AbsoLab Pirate Shoes",
+    "AbsoLab Pirate Gloves",
+    "AbsoLab Pirate Cape",
+    "AbsoLab Pirate Shoulder",
     "Lord Pirate Chair",
     "Lord Pirate Prisoner",
     "Pirate Emblem Flag",
@@ -879,16 +880,17 @@
     "Mobile Mansion Chat Ring",
     "Mobile Mansion Label Ring"
   ],
-  "Moon Bunny": [
-    "Moon Bunny Gloves",
-    "Moon Bunny Headgear",
-    "Moon Bunny Paws"
-  ],
-  "Moonlight Fairy": [
+  "Moon": [
+    "Fafnir Moon Glaive",
     "Moonlight Fairy Maillot",
     "Moonlight Fairy Shoes",
     "Moonlight Fairy Tunic",
-    "Moonlight Fairy Wings"
+    "Moonlight Fairy Wings",
+    "Moon Bunny Custume",
+    "Moon Bunny Gloves",
+    "Moon Bunny Headgear",
+    "Moon Bunny Paws",
+    "Star & Moon Hairpin"
   ],
   "Mummy": [
     "Mummy Hat",
@@ -1055,7 +1057,9 @@
     "Sage Training Outfit",
     "Training Dummy Mount"
   ],
-  "Shark": [
+  "Sha": [
+    "5 O'Clock Shadow",
+    "Evolving Slashing Shadow",
     "Shark Bite Shoes",
     "Shark Bodysuit",
     "Shark Cape",
@@ -1067,7 +1071,10 @@
     "Shark Tooth Skipper Boots",
     "Shark Tooth Skipper Gloves",
     "Shark Tooth Skipper Cape",
-    "Shark Tooth Skipper Shoulder"
+    "Shark Tooth Skipper Shoulder",
+    "Sharp Arrows for Bow",
+    "Sharp Arrows for Crossbow",
+    "Slashing Shadow"
   ],
   "Sil": [
     "Dylan's Silk Hat",
