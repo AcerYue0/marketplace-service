@@ -26,7 +26,12 @@ public class MarketplaceService {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
+    private MqttAsyncService mqttAsyncService;
+
+    @Autowired
     private PlaywrightService playwrightService;
+
+    private boolean writterLock = false;
 
     public void fetchAndSaveLowestPrices() throws IOException, InterruptedException {
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices]");
@@ -73,6 +78,10 @@ public class MarketplaceService {
 
         // 根據關鍵字列表模糊搜尋
         for (Map.Entry<String, List<String>> entry : keywordMap.entrySet()) {
+            // 每次請求後隨機停止 4 ~ 4.2 秒
+            int jitter = new Random().nextInt(100);
+            Thread.sleep(Setting.FETCH_INTERVAL_MILLISECOND + jitter);
+
             String keyword = entry.getKey(); // 每個keyword進行搜尋
             List<String> values = entry.getValue(); // keyword中對應的物件
 
@@ -88,10 +97,6 @@ public class MarketplaceService {
 
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] start fetching item: {}", keyword);
                 ResponseEntity<Map> response = safeExchangeWithRetry(request);
-
-                // 每次請求後隨機停止 4 ~ 4.2 秒
-                int jitter = new Random().nextInt(200);
-                Thread.sleep(Setting.FETCH_INTERVAL_MILLISECOND + jitter);
 
                 // response解析
                 assert response != null;
@@ -153,22 +158,25 @@ public class MarketplaceService {
             }
 
             // 處理這次搜尋中未找到的 values
-            for (String value : values) {
-                if (!foundValues.contains(value)) {
-                    Map<String, Object> valueItem;
-                    // 記錄未找到的 value 為 -1
-                    BigDecimal invalidPrice = BigDecimal.valueOf(-1);
-                    try {
-                        valueItem = results.get(value);
-                        Long valueItemCategory = Long.parseLong(valueItem.get("CategoryNo").toString());
-                        updateSingleEntry(value, invalidPrice, valueItemCategory, "");
-                    } catch (Exception e) {
-                        updateSingleEntry(value, invalidPrice, -1L, "");
-                    } finally {
-                        Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
+            if (!writterLock) {
+                for (String value : values) {
+                    if (!foundValues.contains(value)) {
+                        Map<String, Object> valueItem;
+                        // 記錄未找到的 value 為 -1
+                        BigDecimal invalidPrice = BigDecimal.valueOf(-1);
+                        try {
+                            valueItem = results.get(value);
+                            Long valueItemCategory = Long.parseLong(valueItem.get("CategoryNo").toString());
+                            updateSingleEntry(value, invalidPrice, valueItemCategory, "");
+                        } catch (Exception e) {
+                            updateSingleEntry(value, invalidPrice, -1L, "");
+                        } finally {
+                            Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
+                        }
                     }
                 }
             }
+            writterLock = false;
         }
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
     }
@@ -205,7 +213,11 @@ public class MarketplaceService {
         while (retryCount < Setting.MAX_RETRY) {
             try {
                 Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Attempt {} to fetch item", retryCount + 1);
-                return restTemplate.postForEntity(Setting.API_URL, request, Map.class);
+                ResponseEntity<Map> response = restTemplate.postForEntity(Setting.API_URL, request, Map.class);
+                if (response.getStatusCode().value() == 200) {
+                    return response;
+                }
+                throw new HttpClientErrorException(HttpStatus.FOUND, "302 Redirect not allowed");
             } catch (HttpClientErrorException e) {
                 int status = e.getStatusCode().value();
                 Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] HTTP {}: {}", status, e.getResponseBodyAsString());
@@ -241,6 +253,7 @@ public class MarketplaceService {
                     continue;
                 } else if (status == 302) {
                     Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Host server in maintenance. Stop anyway");
+                    writterLock = true;
                     return null;
                 }
                 throw e;
@@ -328,6 +341,9 @@ public class MarketplaceService {
         if (oldPrice == null || price.compareTo(oldPrice) != 0) {
             Map<String, Object> entry = createEntry(price, categoryNo, imgUrl);
             fileData.put(name, entry);
+
+            // 發送 MQTT（非同步）
+            mqttAsyncService.sendPriceUpdate(name, price, categoryNo, imgUrl);
 
             // 排序
             LinkedHashMap<String, Map<String, Object>> sorted = fileData.entrySet().stream()
