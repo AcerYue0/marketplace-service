@@ -56,18 +56,24 @@ public class MarketplaceService {
         // 若已有 output.json，先載入舊資料
         if (Setting.OUTPUT_FILE.exists()) {
             try {
-                List<Map<String, Object>> oldList = mapper.readValue(Setting.OUTPUT_FILE,
-                    new TypeReference<List<Map<String, Object>>>() {});
-                for (Map<String, Object> entry : oldList) {
-                    String name = (String) entry.get("name");
-                    BigDecimal price = new BigDecimal(entry.get("price").toString());
-                    Long updateTimeUTC = Long.parseLong(entry.get("updateTimeUTC").toString());
-                    Long categoryNo = Long.parseLong(entry.get("categoryNo").toString());
+                Map<String, Map<String, Object>> oldData = mapper.readValue(
+                    Setting.OUTPUT_FILE,
+                    new TypeReference<Map<String, Map<String, Object>>>() {}
+                );
+                for (Map.Entry<String, Map<String, Object>> entry : oldData.entrySet()) {
+                    String name = entry.getKey();
+                    Map<String, Object> value = entry.getValue();
+
+                    BigDecimal price = new BigDecimal(value.get("price").toString());
+                    Long updateTimeUTC = Long.parseLong(value.get("updateTimeUTC").toString());
+                    Long categoryNo = Long.parseLong(value.get("categoryNo").toString());
+                    String imgUrl =  value.get("imgUrl").toString();
 
                     Map<String, Object> info = new HashMap<>();
                     info.put("price", price);
                     info.put("updateTimeUTC", updateTimeUTC);
                     info.put("categoryNo", categoryNo);
+                    info.put("imgUrl", imgUrl);
 
                     results.put(name, info);
                 }
@@ -168,8 +174,24 @@ public class MarketplaceService {
                             valueItem = results.get(value);
                             Long valueItemCategory = Long.parseLong(valueItem.get("CategoryNo").toString());
                             updateSingleEntry(value, invalidPrice, valueItemCategory, "");
+                            // 寫入新的結構進 results
+                            Map<String, Object> updatedItem = new HashMap<>();
+                            updatedItem.put("CategoryNo", valueItemCategory);
+                            updatedItem.put("Price", invalidPrice);
+                            updatedItem.put("imgUrl", "");
+                            updatedItem.put("updateTimeUTC", new Date());
+
+                            results.put(value, updatedItem);
                         } catch (Exception e) {
                             updateSingleEntry(value, invalidPrice, -1L, "");
+                            // 寫入新的結構進 results
+                            Map<String, Object> updatedItem = new HashMap<>();
+                            updatedItem.put("CategoryNo", -1);
+                            updatedItem.put("Price", invalidPrice);
+                            updatedItem.put("imgUrl", "");
+                            updatedItem.put("updateTimeUTC", new Date());
+
+                            results.put(value, updatedItem);
                         } finally {
                             Setting.GLOBAL_LOGGER.info("[fetchAndSaveLowestPrices] Item not found: {}", value);
                         }
@@ -177,6 +199,17 @@ public class MarketplaceService {
                 }
             }
             writterLock = false;
+            new Thread(() -> {
+                try {
+                    ResponseEntity<Map> response = restTemplate.postForEntity(
+                        "https://marketplace-core-ll9s.onrender.com/api/marketplace/saveList",
+                        results,
+                        Map.class
+                    );
+                } catch (Exception e) {
+                    Setting.GLOBAL_LOGGER.error(e.getMessage());
+                }
+            }).start();
         }
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
     }
