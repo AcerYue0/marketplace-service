@@ -657,10 +657,11 @@
     "White M-Forcer Outfit",
     "White Proposal"
   ],
-  "Armor": [
+  "Mor": [
     "Evolving Wrist Armor",
     "Gladiator Armor",
     "Golden Armor",
+    "Memory Flow",
     "Veamoth Armor",
     "Wrist Armor"
   ],
@@ -1156,9 +1157,10 @@
     "Mechanator Pendant",
     "Striped Suspenders Shorts"
   ],
-  "Power": [
+  "Owe": [
     "Condensed Power Crystal",
-    "Double Power Suit"
+    "Double Power Suit",
+    "Flower Dance"
   ],
   "Oun": [
     "Aurora Jewel Mount",
@@ -1204,11 +1206,6 @@
     "Starglimmer Outfit",
     "Starglimmer Shoes",
     "Starglimmer Tiara"
-  ],
-  "Low": [
-    "Emerald Glow",
-    "Flower Dance",
-    "Memory Flow"
   ],
   "The ": [
     "Down in the Dumps",
