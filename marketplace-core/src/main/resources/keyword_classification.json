@@ -63,10 +63,21 @@
     "New Weird Slime Face Accessory",
     "New Weird Yeti Face Accessory"
   ],
-  "Arabian": [
+  "Ian": [
     "Arabian Hat",
     "Arabian Shoes",
-    "Arabian Outfit"
+    "Arabian Outfit",
+    "Giant Bullets",
+    "Giant Pop with a Swirl",
+    "Giant Rooster",
+    "Galactic Guardian",
+    "Hawaiian Sunhat",
+    "Magician Hat",
+    "Night Magician A",
+    "Night Magician B",
+    "Night Magician Chat Ring",
+    "Night Magician Label Ring",
+    "White Fiancee"
   ],
   "Ribbon": [
     "Attitude Ribbon",
@@ -145,10 +156,19 @@
     "Crystal Ventus Badge",
     "Seven Days Badge"
   ],
-  "Chain": [
+  "Ball": [
     "Ball and Chain",
+    "Odette Ballet Slippers",
+    "Pink Bean Balloon",
+    "Pepe Balloon",
+    "Snowballs"
+  ],
+  "Ser": [
     "Berserk Chain",
-    "Evolving Berserk Chain"
+    "Evolving Berserk Chain",
+    "Kaiserion",
+    "Liberated Kaiserium",
+    "Meow Candy Chaser"
   ],
   "Balrog": [
     "Balrog",
@@ -198,24 +218,46 @@
     "Black Wing Master's Hat",
     "Black Wyvern",
     "Blackheart Mount",
+    "Blade Rifle",
+    "Blasted Feather",
+    "Blaze Capsule",
+    "Evolving Blasted Feather",
     "Lotus's Black Wing Shoes",
     "Lotus's Black Wings Uniform",
     "Outsized Sailor Coat (Black & Ivory)",
     "Royal Black Metal Shoulder"
   ],
-  "Mark": [
+  "Mar": [
     "Black Bean Mark",
+    "Blue Nightmare Shoes",
+    "Blue Nightmare Hairpin",
+    "Blue Nightmare Suit",
+    "Blue Nightmare Fedora",
+    "Blue Nightmare Dress",
     "Cape Mark Beret",
     "Kiss Mark",
+    "Marron Glace A",
+    "Marron Glace B",
     "Neophyte Mark",
-    "Papulatus Mark"
+    "Papulatus Mark",
+    "Submarine"
   ],
-  "Master": [
+  "Ter": [
+    "Aquatic Letter Eye Accessory",
+    "Black Scooter",
     "Black Wing Master's Hat",
+    "Eternal Bullets",
+    "Giant Rooster",
     "Grand Master Boots",
     "Grand Master Hat",
     "Grand Master Sword",
-    "Grand Master Uniform"
+    "Grand Master Uniform",
+    "Meow Candy Hunter",
+    "Monster Park Damage Skin",
+    "Scouter",
+    "Sea Otter Slammer",
+    "Stone of Eternal Life",
+    "Waterworks Cape"
   ],
   "Forest": [
     "Blooming Forest Outfit B",
@@ -336,14 +378,18 @@
     "Meow Candy Shoes",
     "Meow Candy Star Tail",
     "Soft Cotton Candy",
+    "Stone of Eternal Life",
     "Sweet Cotton Candy",
     "Twinkling Cotton Candy"
   ],
-  "Catty": [
+  "Att": [
+    "Attitude Cap",
+    "Attitude Ribbon",
     "Catty Arkarium",
     "Catty Hilla",
     "Catty Magnus",
-    "Catty Von Leon"
+    "Catty Von Leon",
+    "Flying Battle Chair"
   ],
   "Hilla": [
     "Catty Hilla",
@@ -415,32 +461,13 @@
     "Rat Charm",
     "Snake Charm"
   ],
-  "Heart": [
-    "Chocolate Heart",
-    "Heart Kitty Fishing Rod",
-    "Heart Kitty Hat",
-    "Heart Kitty Outfit",
-    "Heart Kitty Plate"
-  ],
-  "Commander": [
-    "Commander Arkarium Mask",
-    "Commander Damien Mask",
-    "Commander Hilla Mask",
-    "Commander Lotus Mask",
-    "Commander Magnus Mask",
-    "Commander Von Leon Mask"
-  ],
-  "Damien": [
-    "Commander Damien Mask",
-    "Damien's Eyepatch",
-    "Heroes Damien Chat Ring",
-    "Heroes Damien Label Ring"
-  ],
-  "Cotton": [
+  "Ton": [
     "Cotton Bell",
     "Cotton Hat",
     "Cozy Cotton Candy A",
     "Cozy Cotton Candy B",
+    "Hekaton's Fist",
+    "Hekaton's Rest",
     "Soft Cotton Candy",
     "Sweet Cotton Candy",
     "Twinkling Cotton Candy"
@@ -456,10 +483,14 @@
     "Skull Shirt",
     "Spooky Skull"
   ],
-  "Crispy Carrot": [
+  "Car": [
     "Crispy Carrot Duds",
     "Crispy Carrot Flippers",
-    "Crispy Carrot Skateboard"
+    "Crispy Carrot Skateboard",
+    "Denim Cargos",
+    "Dark Jack's Scar",
+    "Mu Lung Scarecrow Chair",
+    "Scary Toy Gift"
   ],
   "Cygnus": [
     "Cygnus Dress",
@@ -490,7 +521,9 @@
     "Orchid's Best Friend",
     "Oz's Best Friend"
   ],
-  "Guard": [
+  "Ard": [
+    "Construction Hardhat",
+    "Crispy Carrot Skateboard",
     "Cygnus's Guard",
     "Galactic Guardian",
     "Glory Guard Cape",
@@ -498,20 +531,10 @@
     "Glory Guard Hat",
     "Glory Guard Mount",
     "Glory Guard Uniform",
+    "Skateboard",
     "Zakum's Poisonic Guards"
   ],
   "Damage": [
-    "Digitized Damage Skin",
-    "Honeybee Damage Skin",
-    "Kritias Damage Skin",
-    "Monster Park Damage Skin",
-    "Party Quest Blue Damage Skin",
-    "Party Quest Damage Skin",
-    "Slime Damage Skin",
-    "Starlight Aurora Damage Skin",
-    "Yeti and Pepe Damage Skin"
-  ],
-  "Skin": [
     "Digitized Damage Skin",
     "Honeybee Damage Skin",
     "Kritias Damage Skin",
@@ -541,8 +564,10 @@
     "Night Magician Label Ring",
     "Shining Magic"
   ],
-  "Unicorn": [
+  "Orn": [
+    "Chaos Horntail Necklace",
     "Dreaming Unicorn",
+    "Horntail Necklace",
     "Magic Unicorn",
     "Raven Horn Baselard",
     "Raven Horn Metal Fist",
@@ -555,23 +580,26 @@
     "Shining Unicorn",
     "Torn-Up Jeans"
   ],
-  "Dylan": [
-    "Dylan's Silk Hat",
+  "Gentle": [
+    "Gentleman's Mustache",
     "Gentle Dylan"
   ],
-  "Knight": [
+  "Night": [
+    "Blue Nightmare Shoes",
+    "Blue Nightmare Hairpin",
+    "Blue Nightmare Suit",
+    "Blue Nightmare Fedora",
+    "Blue Nightmare Dress",
     "Elite Knight Boots",
     "Elite Knight Cape",
     "Elite Knight Dual Swords",
     "Elite Knight Hat",
-    "Elite Knight Suit"
-  ],
-  "Elite": [
-    "Elite Knight Boots",
-    "Elite Knight Cape",
-    "Elite Knight Dual Swords",
-    "Elite Knight Hat",
-    "Elite Knight Suit"
+    "Elite Knight Suit",
+    "Night Hat",
+    "Night Magician A",
+    "Night Magician B",
+    "Night Magician Chat Ring",
+    "Night Magician Label Ring"
   ],
   "Evolving": [
     "Evolving Berserk Chain",
@@ -587,21 +615,19 @@
     "Evolving White Gold Book <Epode>",
     "Evolving Wrist Armor"
   ],
-  "Epode": [
+  "Ode": [
     "Evolving Metallic Blue Book <Epode>",
     "Evolving Rusty Book <Epode>",
     "Evolving White Gold Book <Epode>",
     "Metallic Blue Book <Epode>",
+    "Modest School Uniform A",
+    "Modest School Uniform B",
+    "Odette Ballet Slippers",
+    "Odette Tiara",
+    "Odette Tutu",
     "Rusty Book <Epode>",
-    "White Gold Book <Epode>"
-  ],
-  "Book": [
-    "Evolving Metallic Blue Book <Epode>",
-    "Evolving Rusty Book <Epode>",
-    "Evolving White Gold Book <Epode>",
-    "Metallic Blue Book <Epode>",
-    "Rusty Book <Epode>",
-    "White Gold Book <Epode>"
+    "White Gold Book <Epode>",
+    "Wooden Tops"
   ],
   "Gold": [
     "Evolving White Gold Book <Epode>",
@@ -667,12 +693,20 @@
     "Fluid Gloves",
     "Fluid Wings"
   ],
-  "Camping": [
+  "Cam": [
+    "Camel Wagon",
+    "Colorful Camo Beanie",
     "Friends of the Forest Camping Chair",
     "Spring Camping Boots",
     "Spring Camping Hat",
     "Spring Camping Outfit A",
     "Spring Camping Outfit B"
+  ],
+  "Col": [
+    "Broccoli Hat",
+    "Chocolate Heart",
+    "Colorful Camo Beanie",
+    "Mimic Protocol Style Look"
   ],
   "Galactic": [
     "Galactic Flame Cape",
@@ -685,27 +719,11 @@
     "Gelimer Chat Ring",
     "Gelimer Label Ring"
   ],
-  "Ghost Groom": [
+  "Ghost": [
     "Ghost Groom Shoes",
     "Ghost Groom Tuxedo",
-    "Ghost Groom Wedding Fedora"
-  ],
-  "Giant": [
-    "Giant Bullets",
-    "Giant Pop with a Swirl",
-    "Giant Rooster"
-  ],
-  "Gladiator": [
-    "Gladiator Armor",
-    "Gladiator Cape",
-    "Gladiator Helmet"
-  ],
-  "Glory": [
-    "Glory Guard Cape",
-    "Glory Guard Ceremonial Sword",
-    "Glory Guard Hat",
-    "Glory Guard Mount",
-    "Glory Guard Uniform"
+    "Ghost Groom Wedding Fedora",
+    "Ghost Suit"
   ],
   "Maple": [
     "Gold Maple Leaf Emblem",
@@ -748,15 +766,12 @@
     "Heart Kitty Plate",
     "Kitty Paint"
   ],
-  "Hekaton": [
-    "Hekaton's Fist",
-    "Hekaton's Rest"
-  ],
-  "Heroes": [
-    "Heroes Damien Chat Ring",
-    "Heroes Damien Label Ring"
-  ],
-  "Honey Bee": [
+  "Bee": [
+    "Bee Train",
+    "Honeybee Antenna Hairband",
+    "Honeybee Damage Skin",
+    "Honeybee Suit",
+    "Honeybee Wings",
     "Honey Bee Chat Ring",
     "Honey Bee Label Ring"
   ],
@@ -778,9 +793,10 @@
     "Ignis Suit",
     "Ignis Wings"
   ],
-  "Jailbird": [
+  "Jail": [
     "Jailbird Cap",
-    "Jailbird Uniform"
+    "Jailbird Uniform",
+    "Jailbreak Spoon"
   ],
   "Slime": [
     "Jiggly Slime",
@@ -789,13 +805,17 @@
     "Slime Dungarees",
     "Slime Stylish Cap"
   ],
-  "Little": [
+  "Lin": [
+    "Goblin Fire",
+    "Lilin's Best Friend",
     "Little Darling Beret",
     "Little Darling Outfit A",
     "Little Darling Outfit B",
     "Little Darling Shoes A",
     "Little Darling Shoes B",
-    "Little Red Riding Dress"
+    "Twinkling Boy Hat",
+    "Twinkling Cotton Candy",
+    "Twinkling Girl Hat"
   ],
   "Red": [
     "Little Red Riding Dress",
@@ -817,6 +837,13 @@
     "Space Pirate Open Helmet",
     "Space Pirate Topper"
   ],
+  "Spa": [
+    "Newspaper Cape",
+    "Spaceship",
+    "Space Pirate Helmet",
+    "Space Pirate Open Helmet",
+    "Space Pirate Topper"
+  ],
   "Forcer": [
     "M-Forcer Boots",
     "M-Forcer Gloves",
@@ -832,10 +859,6 @@
     "Mad Mage Staff",
     "Mad Mage Suit"
   ],
-  "Marron": [
-    "Marron Glace A",
-    "Marron Glace B"
-  ],
   "Mercury": [
     "Mercury Cloak",
     "Mercury Gloves",
@@ -846,10 +869,10 @@
     "Mercury Sword",
     "Mercury Washed Jeans"
   ],
-  "Mighty": [
+  "Banana": [
     "Mighty Banana Chat Ring",
     "Mighty Banana Label Ring",
-    "Mighty Bullets"
+    "Banana Peel Shoes"
   ],
   "Mobile": [
     "Mobile Mansion Chat Ring",
@@ -928,6 +951,12 @@
     "Royal Von Leon Warrior Hands",
     "Royal Von Leon Warrior Cape"
   ],
+  "Rosa": [
+    "Evolving Sacred Rosary",
+    "Lady Rosalia",
+    "Rosalia's Rose",
+    "Sacred Rosary"
+  ],
   "Rose": [
     "Mystic Rose Feather",
     "Mystic Rose Soul",
@@ -936,17 +965,19 @@
     "Rosalia's Rose",
     "Rose"
   ],
-  "Neckerchief Fascinator": [
+  "Chief": [
+    "Chief Hat",
     "Neckerchief Fascinator (Ivory)",
     "Neckerchief Fascinator (Navy)",
     "Neckerchief Fascinator (Purple)",
     "Neckerchief Fascinator (Red)"
   ],
-  "Neo Castle": [
+  "Cas": [
     "Neo Castle Accessory",
     "Neo Castle Dress",
     "Neo Castle Shoes",
-    "Neo Castle Suit"
+    "Neo Castle Suit",
+    "Suitcase"
   ],
   "Neophyte": [
     "Neophyte Belt",
@@ -986,11 +1017,6 @@
     "Pink Teddy Hairband",
     "Pink Teddy Outfit"
   ],
-  "New Weird": [
-    "New Weird Pink Bean Face Accessory",
-    "New Weird Slime Face Accessory",
-    "New Weird Yeti Face Accessory"
-  ],
   "Yeti": [
     "New Weird Yeti Face Accessory",
     "Yeti",
@@ -998,37 +1024,32 @@
     "Yeti Stylish Cap",
     "Yeti and Pepe Damage Skin"
   ],
-  "Night Magician": [
-    "Night Magician A",
-    "Night Magician B",
-    "Night Magician Chat Ring",
-    "Night Magician Label Ring"
-  ],
-  "Odette": [
-    "Odette Ballet Slippers",
-    "Odette Tiara",
-    "Odette Tutu"
-  ],
-  "Sailor Coat": [
+  "Oat": [
+    "Chicken Coataroo",
+    "Goatee",
     "Outsized Sailor Coat (Black & Ivory)",
     "Outsized Sailor Coat (Navy & White)",
     "Outsized Sailor Coat (White & Purple)",
-    "Outsized Sailor Coat (White & Red)"
+    "Outsized Sailor Coat (White & Red)",
+    "Paper Boat Hat",
+    "Trench Coat"
   ],
-  "Pepe": [
+  "Pep": [
     "Pepe Balloon",
     "Pepe Dungarees",
     "Pepe Sleeping Bag Chair",
     "Pepe Stylish Cap",
+    "Salt and Pepper Cape",
     "Yeti and Pepe Damage Skin"
   ],
-  "Raiden": [
+  "Rai": [
+    "Bee Train",
+    "Black Heaven Train Chair",
     "Raiden Gloves",
     "Raiden Hat",
     "Raiden Suit",
-    "Raiden Wings"
-  ],
-  "Training": [
+    "Raiden Wings",
+    "Railroad Engineer Chair",
     "Sage Training Hat",
     "Sage Training Outfit",
     "Training Dummy Mount"
@@ -1047,7 +1068,8 @@
     "Shark Tooth Skipper Cape",
     "Shark Tooth Skipper Shoulder"
   ],
-  "Silver": [
+  "Sil": [
+    "Dylan's Silk Hat",
     "Silver Blossom Ring",
     "Silver Fox Ears",
     "Silver Fox Tail",
@@ -1063,18 +1085,6 @@
     "Spooky Shoes B",
     "Spooky Skull",
     "Spooky Soul"
-  ],
-  "Starglimmer": [
-    "Starglimmer Cape",
-    "Starglimmer Outfit",
-    "Starglimmer Shoes",
-    "Starglimmer Tiara"
-  ],
-  "Starlight": [
-    "Starlight Aurora Damage Skin",
-    "Starlight Guide",
-    "Starlight Leader",
-    "Starlight Wings"
   ],
   "Strawberry": [
     "Strawberry Delight",
@@ -1114,18 +1124,13 @@
     "Tania Tartan Pants",
     "Tania Tartan Skirt"
   ],
-  "Twinkling": [
-    "Twinkling Boy Hat",
-    "Twinkling Cotton Candy",
-    "Twinkling Girl Hat"
-  ],
   "Voltarix": [
     "Voltarix Gloves",
     "Voltarix Hat",
     "Voltarix Suit",
     "Voltarix Wings"
   ],
-  "Chick": [
+  "Ick": [
     "Baby Chick Label Ring",
     "Baby Chick Chat Ring",
     "Chicky-Chicky Boom",
@@ -1404,82 +1409,16 @@
     "Dragon Tail Mage Shoulder"
   ],
   "others": [
-    "Athena Pierce's Class",
-    "Attitude Cap",
-    "Aurora Jewel Mount",
     "Bamboo Sword",
-    "Banana Peel Shoes",
-    "Bandage Strip",
-    "Bee Train",
-    "Blade Rifle",
-    "Blasted Feather",
-    "Blaze Capsule",
-    "Broccoli Hat",
-    "Camel Wagon",
-    "Cape Uniform Shoes A",
-    "Cape Uniform Shoes B",
-    "Chief Hat",
-    "Colorful Camo Beanie",
-    "Condensed Power Crystal",
-    "Construction Hardhat",
-    "Crimson Queen's Throne",
-    "Dark Jack's Scar",
     "Dea Sidus Earring",
-    "Denim Cargos",
-    "Diamond Pickaxe",
-    "Dominator Pendant",
-    "Double Power Suit",
-    "Down in the Dumps",
-    "Dragonoir Mount",
-    "ES Square",
-    "Falcon Eye",
-    "Fish on a Stick",
-    "Flower Dance",
-    "Frameless Glasses",
-    "Gargoyle",
-    "Gentleman's Mustache",
-    "Ghost Suit",
-    "Glamor Hair",
-    "Glaze Capsule",
-    "Goatee",
-    "Goblin Fire",
-    "Green Suspenders",
-    "Hawaiian Sunhat",
-    "Hellhound",
-    "Honeybee Suit",
-    "Horntail Necklace",
     "Icicles",
-    "Inferno Wolf Mount",
-    "Jailbreak Spoon",
-    "Kaiserion",
-    "Lady Rosalia",
     "Lalala Ring",
-    "Large Fork",
-    "Liberated Kaiserium",
     "Manji Outfit",
     "Native Hog",
     "Ragged Top",
     "Rex's Hyena",
-    "Sacred Rosary",
-    "Salt and Pepper Cape",
-    "Scary Toy Gift",
-    "Scouter",
-    "Sea Otter Slammer",
-    "Skateboard",
-    "Snowballs",
-    "Spaceship",
-    "Steak Outfit",
-    "Stone of Eternal Life",
-    "Submarine",
-    "Suitcase",
     "Toga",
-    "Torn-Up Jeans",
-    "Trench Coat",
     "True Shot",
-    "Virtues Medallion",
-    "War Paint",
-    "Waterworks Cape",
-    "Will o' the Wisps",
-    "Wooden Tops"
+    "War Paint"
   ]
 }
