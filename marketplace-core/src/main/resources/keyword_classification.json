@@ -74,14 +74,18 @@
     "Night Magician Label Ring",
     "White Fiancee"
   ],
-  "Ribbon": [
+  "Bon": [
     "Attitude Ribbon",
     "Cape Ribbon Beret",
+    "Chaos Von Bon Helmet",
     "Emerald Ribbon",
     "Red Ribbon Shoes",
     "Ribbon Frilled top",
     "Tenacious Ribbon Pig Hat",
-    "Triumphant Ribbon Pig Hat"
+    "Triumphant Ribbon Pig Hat",
+    "Von Bon Helmet",
+    "Von Bon Mask",
+    "Von Bon's Fury Chair"
   ],
   "Teddy": [
     "Azure Teddy Dress",
@@ -204,6 +208,8 @@
     "Beach Party Slippers"
   ],
   "Bla": [
+    "AbsoLab Blast Knuckle",
+    "AbsoLab Blade Lord",
     "Black Bean Hat",
     "Black Bean Suit",
     "Black Bean Mark",
@@ -217,6 +223,7 @@
     "Blasted Feather",
     "Blaze Capsule",
     "Evolving Blasted Feather",
+    "Lionheart Blast Maul",
     "Lotus's Black Wing Shoes",
     "Lotus's Black Wings Uniform",
     "Outsized Sailor Coat (Black & Ivory)",
@@ -410,12 +417,6 @@
     "Vellum Rock Chair",
     "Vellum's Helm"
   ],
-  "Von Bon": [
-    "Chaos Von Bon Helmet",
-    "Von Bon Helmet",
-    "Von Bon Mask",
-    "Von Bon's Fury Chair"
-  ],
   "Zakum": [
     "Chaos Zakum Helmet",
     "Chaos Zakum's Tree Branch",
@@ -596,20 +597,6 @@
     "Night Magician Chat Ring",
     "Night Magician Label Ring"
   ],
-  "Evolving": [
-    "Evolving Berserk Chain",
-    "Evolving Blasted Feather",
-    "Evolving Death Sender Charm",
-    "Evolving Falcon Eye",
-    "Evolving Metallic Blue Book <Epode>",
-    "Evolving Rusty Book <Epode>",
-    "Evolving Sacred Rosary",
-    "Evolving Slashing Shadow",
-    "Evolving True Shot",
-    "Evolving Virtues Medal",
-    "Evolving White Gold Book <Epode>",
-    "Evolving Wrist Armor"
-  ],
   "Ode": [
     "Evolving Metallic Blue Book <Epode>",
     "Evolving Rusty Book <Epode>",
@@ -639,18 +626,6 @@
     "Golden Shoes",
     "Golden Trench Helmet",
     "White Gold Book <Epode>"
-  ],
-  "White": [
-    "Evolving White Gold Book <Epode>",
-    "Outsized Sailor Coat (Navy & White)",
-    "Outsized Sailor Coat (White & Purple)",
-    "Outsized Sailor Coat (White & Red)",
-    "White Fiancee",
-    "White Gold Book <Epode>",
-    "White High Top",
-    "White M-Forcer Helmet",
-    "White M-Forcer Outfit",
-    "White Proposal"
   ],
   "Mor": [
     "Evolving Wrist Armor",
@@ -771,12 +746,6 @@
     "Honey Bee Chat Ring",
     "Honey Bee Label Ring"
   ],
-  "Hoya": [
-    "Hoya Hat",
-    "Hoya Roar",
-    "Hoya Shorts",
-    "Hoya T-shirt"
-  ],
   "Ifia": [
     "Ifia's Earrings",
     "Ifia's Necklace",
@@ -788,11 +757,6 @@
     "Ignis Hat",
     "Ignis Suit",
     "Ignis Wings"
-  ],
-  "Jail": [
-    "Jailbird Cap",
-    "Jailbird Uniform",
-    "Jailbreak Spoon"
   ],
   "Slime": [
     "Jiggly Slime",
@@ -902,7 +866,11 @@
     "Orange Mushroom Dungarees",
     "Orange Mushroom Stylish Cap"
   ],
-  "Royal": [
+  "Oya": [
+    "Hoya Hat",
+    "Hoya Roar",
+    "Hoya Shorts",
+    "Hoya T-shirt",
     "Royal Mystic Cape",
     "Royal Mystic Shoes",
     "Royal Mystic Uniform A",
@@ -1402,7 +1370,8 @@
     "Fafnir Brionak",
     "Fafnir Moon Glaive"
   ],
-  "Dragon Tail": [
+  "Ail": [
+    "Chaos Horntail Necklace",
     "Dragon Tail Arc Wand",
     "Dragon Tail War Staff",
     "Dragon Tail Mage Sallet",
@@ -1410,7 +1379,37 @@
     "Dragon Tail Mage Shoes",
     "Dragon Tail Mage Gloves",
     "Dragon Tail Mage Cape",
-    "Dragon Tail Mage Shoulder"
+    "Dragon Tail Mage Shoulder",
+    "Jailbird Cap",
+    "Jailbird Uniform",
+    "Jailbreak Spoon",
+    "Golden Fox Tail",
+    "Horntail Necklace",
+    "Lionheart Battle Mail",
+    "Meow Candy Star Tail",
+    "Moonlight Fairy Maillot",
+    "Outsized Sailor Coat (Black & Ivory)",
+    "Outsized Sailor Coat (Navy & White)",
+    "Outsized Sailor Coat (White & Purple)",
+    "Outsized Sailor Coat (White & Red)",
+    "Pink Bean Tail",
+    "Railroad Engineer Chair",
+    "Silver Fox Tail",
+    "Tania Tailored Jacket"
+  ],
+  "True Shot": [
+    "Evolving True Shot",
+    "True Shot"
+  ],
+  "Top": [
+    "Pre-School Uniform Top A",
+    "Pre-School Uniform Top B",
+    "Ragged Top",
+    "Ribbon Frilled top",
+    "Snake High-tops",
+    "Space Pirate Topper",
+    "White High Top",
+    "Wooden Tops"
   ],
   "others": [
     "Bamboo Sword",
@@ -1419,10 +1418,8 @@
     "Lalala Ring",
     "Manji Outfit",
     "Native Hog",
-    "Ragged Top",
     "Rex's Hyena",
     "Toga",
-    "True Shot",
     "War Paint"
   ]
 }
