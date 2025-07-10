@@ -25,9 +25,7 @@ public class MqttSenderService {
             message.setQos(1);
 
             client.publish(topic, message);
-            Setting.GLOBAL_LOGGER.info("[sendMessage] MQTT send message: {}", payload);
             Thread.sleep(100L);
-            Setting.GLOBAL_LOGGER.info("[sendMessage] MQTT message sent");
             client.disconnect();
         } catch (MqttException | InterruptedException e) {
             Setting.GLOBAL_LOGGER.error(e.getMessage());

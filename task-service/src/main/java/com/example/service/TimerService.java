@@ -13,7 +13,7 @@ public class TimerService {
     @Async
     public void start20MinTimer(FetchAllNFTCollectionItemsTask task) {
         try {
-            Thread.sleep(20 * 60 * 1000); // 等待15分鐘
+            Thread.sleep(19 * 60 * 1000); // 等待15分鐘
             task.enableCron();
             Setting.GLOBAL_LOGGER.info("Cron re-enabled.");
         } catch (InterruptedException e) {

@@ -31,7 +31,7 @@ public class MarketplaceService {
     @Autowired
     private PlaywrightService playwrightService;
 
-    private boolean writterLock = false;
+    private boolean writerLock = false;
 
     public void fetchAndSaveLowestPrices() throws IOException, InterruptedException {
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices]");
@@ -84,7 +84,7 @@ public class MarketplaceService {
 
             String keyword = entry.getKey(); // 每個keyword進行搜尋
             List<String> values = entry.getValue(); // keyword中對應的物件
-
+            Map<String, BigDecimal> lowestPriceMap = new HashMap<>();
             // 初始化迴圈值
             int pageNo = 1;
             boolean hasMorePage = true;
@@ -132,8 +132,11 @@ public class MarketplaceService {
                                     RoundingMode.DOWN);
                             // 若更低價則更新價格，寫入檔案
                             if (results.get(name) != null) {
-                                Map<String, Object> nowValue = results.get(name);
-                                if (price.compareTo((BigDecimal) nowValue.get("price")) < 0) {
+                                BigDecimal recordedLowest = lowestPriceMap.get(name);
+                                if (recordedLowest == null || price.compareTo(recordedLowest) < 0) {
+                                    // 更新最低價快取
+                                    lowestPriceMap.put(name, price);
+                                    // 寫入記錄
                                     results.put(name, createEntry(price, categoryNo, imgUrl));
                                     updateSingleEntry(name, price, categoryNo, imgUrl);
                                 }
@@ -158,7 +161,7 @@ public class MarketplaceService {
             }
 
             // 處理這次搜尋中未找到的 values
-            if (!writterLock) {
+            if (!writerLock) {
                 for (String value : values) {
                     if (!foundValues.contains(value)) {
                         Map<String, Object> valueItem;
@@ -175,8 +178,19 @@ public class MarketplaceService {
                         }
                     }
                 }
+                writerLock = false;
             }
-            writterLock = false;
+            new Thread(() -> {
+                try {
+                    ResponseEntity<String> response = restTemplate.postForEntity(
+                        "https://marketplace-core-ll9s.onrender.com/api/marketplace/saveList",
+                        results,
+                        String.class
+                    );
+                } catch (Exception e) {
+                    Setting.GLOBAL_LOGGER.error(e.getMessage());
+                }
+            }).start();
         }
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
     }
@@ -253,7 +267,7 @@ public class MarketplaceService {
                     continue;
                 } else if (status == 302) {
                     Setting.GLOBAL_LOGGER.warn("[safeExchangeWithRetry] Host server in maintenance. Stop anyway");
-                    writterLock = true;
+                    writerLock = true;
                     return null;
                 }
                 throw e;

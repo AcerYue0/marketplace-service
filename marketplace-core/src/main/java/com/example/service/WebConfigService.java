@@ -9,7 +9,7 @@ public class WebConfigService implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOriginPatterns("*")  // Live Server 網址
+            .allowedOriginPatterns("https://aceryue0.github.io")  // Live Server 網址
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowCredentials(true);
     }

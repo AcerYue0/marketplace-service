@@ -22,7 +22,6 @@ public class MqttAsyncService {
                 "{\"%s\": {\"price\": %s, \"categoryNo\": %d, \"imgUrl\": %s}}",
                 name, price.toPlainString(), categoryNo, imgUrl
             );
-            Setting.GLOBAL_LOGGER.info("[sendPriceUpdate] MQTT send message");
             mqttSenderService.sendMessage(payload);
         } catch (Exception e) {
             // 非同步失敗不影響主流程
