@@ -45,6 +45,8 @@ public class MarketplaceService {
         // 取出 "others" 的值並轉換為 List<String>
         List<String> others = keywordMap.remove("others"); // 先移除原本的 "others" 鍵，避免干擾
 
+        int searchingIndex = 0;
+
         if (others != null) {
             for (String item : others) {
                 // 為每個 item 加入一筆新的 key-value
@@ -56,23 +58,15 @@ public class MarketplaceService {
         // 若已有 output.json，先載入舊資料
         if (Setting.OUTPUT_FILE.exists()) {
             try {
-                List<Map<String, Object>> oldList = mapper.readValue(Setting.OUTPUT_FILE,
-                    new TypeReference<List<Map<String, Object>>>() {});
-                for (Map<String, Object> entry : oldList) {
-                    String name = (String) entry.get("name");
-                    BigDecimal price = new BigDecimal(entry.get("price").toString());
-                    Long updateTimeUTC = Long.parseLong(entry.get("updateTimeUTC").toString());
-                    Long categoryNo = Long.parseLong(entry.get("categoryNo").toString());
+                Map<String, Map<String, Object>> oldList = mapper.readValue(
+                    Setting.OUTPUT_FILE, new TypeReference<>() {}
+                );
+                results.putAll(oldList);
 
-                    Map<String, Object> info = new HashMap<>();
-                    info.put("price", price);
-                    info.put("updateTimeUTC", updateTimeUTC);
-                    info.put("categoryNo", categoryNo);
-
-                    results.put(name, info);
-                }
+                Setting.GLOBAL_LOGGER.info("output.json read. Upload to server first");
+                uploadData(results);
             } catch (IOException e) {
-                Setting.GLOBAL_LOGGER.info("Failed to read existing output.json, starting fresh.");
+                Setting.GLOBAL_LOGGER.error("Failed to read existing output.json: {}", e.getMessage());
             }
         }
 
@@ -179,18 +173,11 @@ public class MarketplaceService {
                     }
                 }
                 writerLock = false;
-            }
-            new Thread(() -> {
-                try {
-                    ResponseEntity<String> response = restTemplate.postForEntity(
-                        "https://marketplace-core-ll9s.onrender.com/api/marketplace/saveList",
-                        results,
-                        String.class
-                    );
-                } catch (Exception e) {
-                    Setting.GLOBAL_LOGGER.error(e.getMessage());
+                if (searchingIndex % 3 == 0) {
+                    uploadData(results);
                 }
-            }).start();
+            }
+            searchingIndex += 1;
         }
         Setting.GLOBAL_LOGGER.trace("[fetchAndSaveLowestPrices] Finish fetching all items.");
     }
@@ -319,6 +306,20 @@ public class MarketplaceService {
     private String truncate(String str) {
         if (str == null) return null;
         return str.length() <= 300 ? str : str.substring(0, 300) + "...(truncated)";
+    }
+
+    private void uploadData(Map<String, Map<String, Object>> results) {
+        new Thread(() -> {
+            try {
+                ResponseEntity<String> response = restTemplate.postForEntity(
+                    "https://marketplace-core-ll9s.onrender.com/api/marketplace/saveList",
+                    results,
+                    String.class
+                );
+            } catch (Exception e) {
+                Setting.GLOBAL_LOGGER.error(e.getMessage());
+            }
+        }).start();
     }
 
     public Map<String, Object> loadLatestResult() throws IOException {

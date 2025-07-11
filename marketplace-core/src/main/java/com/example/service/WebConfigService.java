@@ -17,6 +17,11 @@ public class WebConfigService implements WebMvcConfigurer {
             .allowedOriginPatterns("https://aceryue0.github.io")
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowCredentials(true);
+
+        registry.addMapping("/api/marketplace/saveList")
+            .allowedOriginPatterns("*")  // 允許所有來源
+            .allowedMethods("POST")      // 僅允許 POST
+            .allowCredentials(false);
     }
 
     @Override
