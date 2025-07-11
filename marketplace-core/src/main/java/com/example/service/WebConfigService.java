@@ -14,7 +14,7 @@ public class WebConfigService implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/marketplace/fetchList")
-            .allowedOriginPatterns("https://aceryue0.github.io")
+            .allowedOrigins("https://aceryue0.github.io")
             .allowedMethods("POST")
             .allowCredentials(true);
 
