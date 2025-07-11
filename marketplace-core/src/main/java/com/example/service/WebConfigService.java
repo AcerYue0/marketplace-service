@@ -16,7 +16,7 @@ public class WebConfigService implements WebMvcConfigurer {
         registry.addMapping("/api/marketplace/fetchList")
             .allowedOriginPatterns("https://aceryue0.github.io")
             .allowedMethods("POST")
-            .allowCredentials(true);
+            .allowCredentials(false);
 
         registry.addMapping("/api/marketplace/getList")
             .allowedOriginPatterns("https://aceryue0.github.io")
@@ -27,11 +27,5 @@ public class WebConfigService implements WebMvcConfigurer {
             .allowedOriginPatterns("*")  // 允許所有來源
             .allowedMethods("POST")      // 僅允許 POST
             .allowCredentials(false);
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(originInterceptor)
-            .addPathPatterns("/**"); // 可自行排除某些 API
     }
 }
