@@ -13,6 +13,11 @@ public class OriginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        // 放行預檢請求
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+        
         String origin = request.getHeader("Origin");
 
         if (origin != null && !ALLOWED_ORIGINS.contains(origin)) {
