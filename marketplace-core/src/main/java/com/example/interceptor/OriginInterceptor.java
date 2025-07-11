@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Component
 public class OriginInterceptor implements HandlerInterceptor {
-    private static final Set<String> ALLOWED_ORIGINS = Set.of("https://aceryue0.github.io");
+    private static final Set<String> ALLOWED_ORIGINS = Set.of("https://aceryue0.github.io/NFT-collection-item-list/");
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
